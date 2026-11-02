@@ -1,4 +1,11 @@
-# Cloudflare Pages Security & Cache Headers
+# Block search engines from indexing the Cloudflare Pages preview subdomains (Index: 0)
+https://*.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+https://pdfpagenio.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Global Security & Performance Headers
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
