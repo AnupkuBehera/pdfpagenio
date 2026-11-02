@@ -1,0 +1,42 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pBadge" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FF4D4D"/>
+      <stop offset="55%" stopColor="#E5322D"/>
+      <stop offset="100%" stopColor="#B91C1C"/>
+    </linearGradient>
+    <linearGradient id="foldFacet" x1="18" y1="6" x2="25" y2="13" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stopColor="#E2E8F0" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+
+  <!-- High-Impact Crimson Squircle Tile -->
+  <rect width="32" height="32" rx="8" fill="url(#pBadge)"/>
+
+  <!-- Subtle Rim Light for Dark Taskbar Contrast -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Bold White Origami Document "P" Ribbon -->
+  <!-- Vertical Spine / Document Edge -->
+  <rect x="7" y="6" width="5.5" height="20" rx="1.5" fill="#FFFFFF"/>
+
+  <!-- Folding Document "P" Loop Body -->
+  <path
+    d="M11 6H19.5C23.0899 6 26 8.91015 26 12.5C26 16.0899 23.0899 19 19.5 19H11V6Z"
+    fill="#FFFFFF"
+  />
+
+  <!-- Clean Embossed Cutout (Reveals Core Crimson) -->
+  <path
+    d="M12.5 10.5H19C20.1046 10.5 21 11.3954 21 12.5C21 13.6046 20.1046 14.5 19 14.5H12.5V10.5Z"
+    fill="url(#pBadge)"
+  />
+
+  <!-- 45-Degree Origami Paper Fold Facet -->
+  <path
+    d="M19 6L26 13H21C19.8954 13 19 12.1046 19 11V6Z"
+    fill="url(#foldFacet)"
+  />
+</svg>
+

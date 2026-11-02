@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-rgb: 248, 250, 252;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: rgb(var(--background-rgb));
+  background-image: 
+    radial-gradient(circle at 50% -10%, rgba(229, 50, 45, 0.08) 0%, rgba(248, 250, 252, 0) 55%),
+    radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+  background-size: 100% 700px, 24px 24px;
+  background-repeat: no-repeat, repeat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Interactive elements */
+.btn-primary {
+  @apply relative inline-flex items-center justify-center font-bold tracking-tight rounded-2xl bg-gradient-to-b from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg shadow-brand-500/25 hover:shadow-xl hover:shadow-brand-500/35 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center font-semibold rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98];
+}
+
+.glass-panel {
+  @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+}
+
+.tool-card {
+  @apply relative flex flex-col p-6 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/80 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] hover:shadow-[0_24px_48px_-12px_rgba(229,50,45,0.18)] hover:border-brand-400/80 transition-all duration-300 hover:-translate-y-2 cursor-pointer;
+}
+
+.bento-card {
+  @apply relative p-8 rounded-3xl bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] hover:shadow-xl transition-all duration-300;
+}
+
+/* Shimmer pulse effect */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2.5s infinite;
+  content: '';
+}

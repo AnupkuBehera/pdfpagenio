@@ -1,0 +1,276 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { ChevronRight, HelpCircle, Shield, Zap, Sparkles, CheckCircle2 } from "lucide-react";
+import { Tool, getToolsByCategory } from "@/lib/tools";
+import FileUploader from "./FileUploader";
+import Workspace from "./Workspace";
+import ResultScreen from "./ResultScreen";
+
+export interface ToolPageLayoutProps {
+  tool: Tool;
+  locale?: string;
+}
+
+export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
+  const isRtl = locale === "ar";
+  const [stage, setStage] = useState<"upload" | "workspace" | "result">("upload");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [resultData, setResultData] = useState<{
+    fileName: string;
+    bytes?: Uint8Array;
+    multipleFiles?: { fileName: string; bytes: Uint8Array }[];
+    originalSize?: number;
+    newSize?: number;
+    savingsPercentage?: number;
+    targetKb?: number;
+    targetMet?: boolean;
+  } | null>(null);
+
+  const handleFilesSelected = (files: File[]) => {
+    setSelectedFiles(files);
+    setStage("workspace");
+  };
+
+  const handleComplete = (data: {
+    fileName: string;
+    bytes?: Uint8Array;
+    multipleFiles?: { fileName: string; bytes: Uint8Array }[];
+    originalSize?: number;
+    newSize?: number;
+    savingsPercentage?: number;
+    targetKb?: number;
+    targetMet?: boolean;
+  }) => {
+    setResultData(data);
+    setStage("result");
+  };
+
+  const handleReset = () => {
+    setSelectedFiles([]);
+    setResultData(null);
+    setStage("upload");
+  };
+
+  const relatedTools = getToolsByCategory(tool.category).filter((t) => t.id !== tool.id).slice(0, 3);
+
+  return (
+    <div
+      dir={isRtl ? "rtl" : "ltr"}
+      className={`min-h-screen flex flex-col bg-slate-50/60 ${isRtl ? "rtl text-right" : ""}`}
+    >
+      {/* Tool Hero Header */}
+      <section className="pt-10 pb-6 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
+        {/* Breadcrumb & Step Progress Stepper */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <nav className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+            <Link href="/" className="hover:text-slate-600">Home</Link>
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+            <span className="capitalize">{tool.category.replace("-", " ")}</span>
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+            <span className="text-slate-800 font-bold">{tool.name}</span>
+          </nav>
+
+          {/* 3-Step Progress Indicator */}
+          <div className="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-white border border-slate-200 shadow-sm text-[11px] font-bold">
+            <span
+              className={`px-3 py-1 rounded-xl transition-all ${
+                stage === "upload"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-slate-400"
+              }`}
+            >
+              1. Upload
+            </span>
+            <ChevronRight className="w-3 h-3 text-slate-300 rtl:rotate-180" />
+            <span
+              className={`px-3 py-1 rounded-xl transition-all ${
+                stage === "workspace"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-slate-400"
+              }`}
+            >
+              2. Configure
+            </span>
+            <ChevronRight className="w-3 h-3 text-slate-300 rtl:rotate-180" />
+            <span
+              className={`px-3 py-1 rounded-xl transition-all ${
+                stage === "result"
+                  ? "bg-green-600 text-white shadow-sm"
+                  : "text-slate-400"
+              }`}
+            >
+              3. Download
+            </span>
+          </div>
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
+          {tool.name}
+        </h1>
+        <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          {tool.longDescription}
+        </p>
+      </section>
+
+      {/* Main Interactive Stage Container */}
+      <main className="flex-1 px-4 sm:px-6 lg:px-8">
+        {stage === "upload" && (
+          <FileUploader
+            tool={tool}
+            onFilesSelected={handleFilesSelected}
+            multiple={tool.maxFiles > 1}
+          />
+        )}
+
+        {stage === "workspace" && (
+          <Workspace
+            tool={tool}
+            initialFiles={selectedFiles}
+            onComplete={handleComplete}
+            onCancel={handleReset}
+          />
+        )}
+
+        {stage === "result" && resultData && (
+          <ResultScreen
+            tool={tool}
+            fileName={resultData.fileName}
+            fileBytes={resultData.bytes}
+            multipleFiles={resultData.multipleFiles}
+            originalSize={resultData.originalSize}
+            newSize={resultData.newSize}
+            savingsPercentage={resultData.savingsPercentage}
+            targetKb={resultData.targetKb}
+            targetMet={resultData.targetMet}
+            onReset={handleReset}
+          />
+        )}
+      </main>
+
+      {/* Trust & Features Strip */}
+      <section className="py-14 border-y border-slate-200/80 bg-white/80 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 shadow-sm">
+                <Zap className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">Instant Browser Execution</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                  Runs directly inside your browser with WebAssembly for zero latency and instant processing.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 shadow-sm">
+                <Shield className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">100% Privacy Guaranteed</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                  Your files are not stored, read, or indexed. Protected with TLS 1.3 encryption.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 shadow-sm">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">Free Forever</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                  No hidden watermarks, no mandatory signups, and no limits on essential everyday PDF workflows.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How To Step-by-Step Guide */}
+      <section className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 text-center tracking-tight mb-10">
+          How to {tool.name} in 3 Simple Steps
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {tool.howTo.map((step, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-3xl border border-slate-200/80 p-7 shadow-sm relative flex flex-col justify-between hover:shadow-md transition-shadow"
+            >
+              <div>
+                <span className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 text-white font-black text-sm flex items-center justify-center mb-5 shadow-md shadow-brand-500/20">
+                  {idx + 1}
+                </span>
+                <p className="text-sm font-semibold text-slate-700 leading-relaxed">
+                  {step}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Frequently Asked Questions (FAQ) Accordion */}
+      {tool.seo.faq.length > 0 && (
+        <section className="py-16 bg-white border-t border-slate-200/80">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <HelpCircle className="w-8 h-8 text-brand-600 mx-auto mb-2" />
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Frequently Asked Questions
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {tool.seo.faq.map((faq, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-3xl border border-slate-200/80 p-6 bg-slate-50/50"
+                >
+                  <h3 className="font-extrabold text-slate-800 text-base mb-2">
+                    {faq.question}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <section className="py-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">
+            Explore More PDF Tools
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {relatedTools.map((rel) => (
+              <Link
+                key={rel.id}
+                href={`/${rel.slug}`}
+                className="p-6 rounded-3xl bg-white border border-slate-200/80 hover:border-brand-300 hover:shadow-lg transition-all group"
+              >
+                <h3 className="font-extrabold text-slate-800 text-sm group-hover:text-brand-600 transition-colors mb-1.5">
+                  {rel.name}
+                </h3>
+                <p className="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed">
+                  {rel.shortDescription}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
