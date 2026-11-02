@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools";
 
+export const dynamic = "force-static";
+
 const BASE_URL = "https://pdfpagenio.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
