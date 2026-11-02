@@ -44,11 +44,20 @@ export const metadata: Metadata = {
     title: "PDF Pagenio | Fast, Secure & Free Online PDF Tools",
     description:
       "All-in-one PDF tools for effortless document work. Merge, split, compress, convert, and sign with zero latency.",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "PDF Pagenio - Fast, Secure & Free Online PDF Tools",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "PDF Pagenio | Fast & Free Online PDF Tools",
     description: "Every tool you need to work with PDFs in one place. 100% free, private, and fast.",
+    images: ["/og-image.svg"],
   },
   icons: {
     icon: [
