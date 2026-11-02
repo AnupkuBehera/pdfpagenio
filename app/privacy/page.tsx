@@ -49,10 +49,35 @@ export default function PrivacyPage() {
             We strictly do not inspect, read, copy, or use your document contents for machine learning, advertising, or third-party purposes. Your intellectual property remains exclusively yours.
           </p>
 
-          <h2 className="text-lg font-bold text-slate-900 pt-2">4. Cookies and Analytics</h2>
+          <h2 className="text-lg font-bold text-slate-900 pt-2">4. Cookies and Advertising (Google AdSense)</h2>
           <p>
-            We use essential technical cookies to manage session state and anonymous telemetry to maintain server health. We do not sell or monetize personal data.
+            We use essential technical cookies to maintain application stability, user preferences, and anonymous performance analytics. In addition, third-party vendors, including Google, use cookies to serve advertisements based on a user&apos;s prior visits to our website or other websites on the Internet:
           </p>
+          <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
+            <li>
+              Google&apos;s use of advertising cookies enables it and its partners to serve ads to our users based on their visits to our site and/or other sites across the web.
+            </li>
+            <li>
+              Users may opt out of personalized advertising by visiting{" "}
+              <a
+                href="https://www.google.com/settings/ads"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-600 underline hover:text-brand-700"
+              >
+                Google Ads Settings
+              </a>{" "}
+              or by visiting{" "}
+              <a
+                href="https://www.aboutads.info/choices/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-600 underline hover:text-brand-700"
+              >
+                aboutads.info
+              </a>.
+            </li>
+          </ul>
 
           <h2 className="text-lg font-bold text-slate-900 pt-2">5. Privacy Contact</h2>
           <p>

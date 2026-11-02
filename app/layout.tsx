@@ -102,6 +102,19 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== "undefined" && window.location.hostname.endsWith(".pages.dev")) {
+                var meta = document.createElement("meta");
+                meta.name = "robots";
+                meta.content = "noindex, nofollow";
+                document.head.appendChild(meta);
+                window.location.replace("https://pdfpagenio.com" + window.location.pathname + window.location.search);
+              }
+            `,
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(globalJsonLd) }}
         />
