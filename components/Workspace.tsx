@@ -40,6 +40,8 @@ import { addWatermark } from "@/lib/pdf/client-watermark";
 import { imagesToPDF } from "@/lib/pdf/client-images";
 import { compressPDFClient, CompressionLevel } from "@/lib/pdf/client-compress";
 import { signPDF } from "@/lib/pdf/client-sign";
+import { convertPdfToDocx } from "@/lib/pdf/client-pdf-to-docx";
+import { convertDocxToPdf } from "@/lib/pdf/client-docx-to-pdf";
 
 export interface WorkspaceFileItem {
   id: string;
@@ -489,6 +491,33 @@ export default function Workspace({
           fileName: `signed_${items[0].name}`,
           bytes: signedBytes,
         });
+      } else if (tool.id === "pdf-to-word") {
+        const buffer = await items[0].file.arrayBuffer();
+        const baseName = items[0].name.replace(/\.[^/.]+$/, "");
+        const docxBytes = await convertPdfToDocx(buffer);
+        onComplete({
+          fileName: `${baseName}.docx`,
+          bytes: docxBytes,
+          originalSize: items[0].size,
+          newSize: docxBytes.byteLength,
+        });
+      } else if (tool.id === "word-to-pdf") {
+        const file = items[0].file;
+        const fileName = file.name.toLowerCase();
+        if (fileName.endsWith(".doc") && !fileName.endsWith(".docx")) {
+          throw new Error(
+            "Legacy binary Word (.doc) format detected. Please save your file as modern .docx format in Microsoft Word or Google Docs for instant client-side conversion."
+          );
+        }
+        const buffer = await file.arrayBuffer();
+        const baseName = items[0].name.replace(/\.[^/.]+$/, "");
+        const pdfBytes = await convertDocxToPdf(buffer);
+        onComplete({
+          fileName: `${baseName}.pdf`,
+          bytes: pdfBytes,
+          originalSize: items[0].size,
+          newSize: pdfBytes.byteLength,
+        });
       } else {
         throw new Error(
           `${tool.name} requires the background conversion microservice. Launching docker worker...`
@@ -887,6 +916,32 @@ export default function Workspace({
                     Landscape
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* PDF TO WORD OPTIONS / INFO */}
+            {tool.id === "pdf-to-word" && (
+              <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-amber-800">
+                  <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Client-Side Word Engine</span>
+                </div>
+                <p className="text-amber-700/90 leading-relaxed">
+                  Your PDF will be converted into an editable Microsoft Word document (.docx) directly in your browser. Text, headings, and formatting will be preserved with complete privacy.
+                </p>
+              </div>
+            )}
+
+            {/* WORD TO PDF OPTIONS / INFO */}
+            {tool.id === "word-to-pdf" && (
+              <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-200/80 text-blue-900 text-xs space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-blue-800">
+                  <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span>High-Fidelity PDF Engine</span>
+                </div>
+                <p className="text-blue-700/90 leading-relaxed">
+                  Your Word document (.docx) will be parsed and rendered into a standard vector PDF directly on your device. Layout, font styles, and margins are preserved.
+                </p>
               </div>
             )}
 

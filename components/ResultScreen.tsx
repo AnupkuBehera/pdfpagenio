@@ -56,7 +56,11 @@ export default function ResultScreen({
     });
 
     if (fileBytes) {
-      const blob = new Blob([fileBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const isDocx = fileName.toLowerCase().endsWith(".docx");
+      const mimeType = isDocx
+        ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        : "application/pdf";
+      const blob = new Blob([fileBytes as any], { type: mimeType });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
 
@@ -82,7 +86,11 @@ export default function ResultScreen({
       link.click();
     } else if (multipleFiles && multipleFiles.length > 0) {
       multipleFiles.forEach((file) => {
-        const blob = new Blob([file.bytes.buffer as ArrayBuffer], { type: "application/pdf" });
+        const isDocx = file.fileName.toLowerCase().endsWith(".docx");
+        const mimeType = isDocx
+          ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          : "application/pdf";
+        const blob = new Blob([file.bytes as any], { type: mimeType });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -108,10 +116,14 @@ export default function ResultScreen({
       </div>
 
       <h2 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight mb-2">
-        PDF Successfully Processed!
+        {fileName.toLowerCase().endsWith(".docx")
+          ? "Word Document Ready!"
+          : "PDF Successfully Processed!"}
       </h2>
       <p className="text-sm text-slate-500 mb-6">
-        Your document is ready. The download started automatically in your browser.
+        {fileName.toLowerCase().endsWith(".docx")
+          ? "Your editable Word document (.docx) is ready. The download started automatically."
+          : "Your document is ready. The download started automatically in your browser."}
       </p>
 
       {/* Savings Metric for Compress */}
@@ -152,7 +164,11 @@ export default function ResultScreen({
           className="btn-primary w-full sm:w-auto text-base sm:text-lg px-8 py-4 rounded-2xl shadow-xl shadow-brand-500/25 flex items-center justify-center gap-2 group animate-shimmer"
         >
           <Download className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-          <span>Download {tool.name}</span>
+          <span>
+            {fileName.toLowerCase().endsWith(".docx")
+              ? "Download Word Document (.docx)"
+              : `Download ${tool.name}`}
+          </span>
         </button>
 
         <button

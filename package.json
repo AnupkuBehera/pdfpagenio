@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsc --esModuleInterop --module commonjs --target es2022 --outDir dist-test --moduleResolution node tests/pdf.test.ts && node dist-test/tests/pdf.test.js"
+    "test": "tsc --skipLibCheck --esModuleInterop --module commonjs --target es2022 --outDir dist-test --moduleResolution node tests/pdf.test.ts && node dist-test/tests/pdf.test.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

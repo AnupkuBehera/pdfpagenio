@@ -30,9 +30,25 @@ export default function FileUploader({
     multiple: multiple && tool.maxFiles > 1,
     accept: tool.acceptedFileTypes.reduce((acc, curr) => {
       if (curr.startsWith(".")) {
-        acc["application/octet-stream"] = [curr];
+        const mime =
+          curr === ".docx"
+            ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            : curr === ".doc"
+            ? "application/msword"
+            : curr === ".pdf"
+            ? "application/pdf"
+            : "application/octet-stream";
+        if (!acc[mime]) acc[mime] = [];
+        if (!acc[mime].includes(curr)) acc[mime].push(curr);
       } else {
-        acc[curr] = [];
+        if (!acc[curr]) acc[curr] = [];
+        if (curr === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" && !acc[curr].includes(".docx")) {
+          acc[curr].push(".docx");
+        } else if (curr === "application/msword" && !acc[curr].includes(".doc")) {
+          acc[curr].push(".doc");
+        } else if (curr === "application/pdf" && !acc[curr].includes(".pdf")) {
+          acc[curr].push(".pdf");
+        }
       }
       return acc;
     }, {} as Record<string, string[]>),

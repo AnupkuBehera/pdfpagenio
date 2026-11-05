@@ -621,12 +621,12 @@ export const TOOLS: Tool[] = [
     slug: "word-to-pdf",
     name: "WORD to PDF",
     shortDescription: "Convert DOC and DOCX documents to standard PDF with flawless formatting.",
-    longDescription: "Preserve typography, layouts, tables, and images when converting Microsoft Word documents (.doc, .docx) into pristine PDF files.",
+    longDescription: "Preserve typography, layouts, tables, and images when converting Microsoft Word documents (.docx) into pristine PDF files.",
     category: "convert-to",
     icon: "FileText",
     color: "#2563EB",
-    clientExecutable: false,
-    acceptedFileTypes: [".doc", ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"],
+    clientExecutable: true,
+    acceptedFileTypes: [".docx", ".doc", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"],
     maxFiles: 10,
     seo: {
       title: "Convert Word to PDF online - Free DOCX to PDF Converter",
@@ -635,7 +635,7 @@ export const TOOLS: Tool[] = [
       faq: [
         {
           question: "Will the fonts and formatting look the same?",
-          answer: "Yes, our server-side LibreOffice engine matches fonts and layouts precisely to ensure identical appearance."
+          answer: "Yes, our client-side PDF rendering engine parses formatting, fonts, and layout directly on your device with 100% privacy."
         }
       ]
     },
@@ -780,7 +780,7 @@ export const TOOLS: Tool[] = [
     category: "convert-from",
     icon: "FileEdit",
     color: "#D97706",
-    clientExecutable: false,
+    clientExecutable: true,
     acceptedFileTypes: ["application/pdf"],
     maxFiles: 10,
     seo: {

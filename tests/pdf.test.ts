@@ -8,6 +8,9 @@ import { addPageNumbers } from "../lib/pdf/client-pagenumbers";
 import { addWatermark } from "../lib/pdf/client-watermark";
 import { cropPDF } from "../lib/pdf/client-crop";
 import { compressPDFClient } from "../lib/pdf/client-compress";
+import { createZip, extractZip, readZipTextFile } from "../lib/pdf/zip-utils";
+import { convertPdfToDocx } from "../lib/pdf/client-pdf-to-docx";
+import { convertDocxToPdf } from "../lib/pdf/client-docx-to-pdf";
 
 async function createTestPDF(numPages = 3, label = "Doc") {
   const doc = await PDFDocument.create();
@@ -169,8 +172,40 @@ async function runTests() {
   assert.strictEqual(compress100Result.targetMet, true, "File must be strictly under 100 KB");
   console.log("  ✓ Target-Size Compression passed (Under 200 KB and 100 KB guaranteed)");
 
+  // 14. ZIP Utilities Test (Pack and Unpack)
+  console.log("14. Testing ZIP Utilities (Packaging & Extraction)...");
+  const testFiles = [
+    { name: "[Content_Types].xml", data: '<?xml version="1.0"?><Types/>' },
+    { name: "word/document.xml", data: '<w:document><w:body><w:p><w:r><w:t>Hello Unit Test</w:t></w:r></w:p></w:body></w:document>' },
+  ];
+  const zipBytes = await createZip(testFiles);
+  assert.ok(zipBytes.byteLength > 50, "ZIP buffer should contain data");
+  const extractedFiles = await extractZip(zipBytes);
+  assert.strictEqual(extractedFiles.size, 2, "Should extract exactly 2 files");
+  const docXml = await readZipTextFile(zipBytes, "word/document.xml");
+  assert.ok(docXml && docXml.includes("Hello Unit Test"), "Extracted text must match original");
+  console.log("  ✓ ZIP creation and extraction passed");
+
+  // 15. PDF to DOCX In-Browser Converter Test
+  console.log("15. Testing PDF to Word (DOCX) Conversion...");
+  const samplePdf = await createTestPDF(2, "TestReport");
+  const docxResult = await convertPdfToDocx(samplePdf);
+  assert.ok(docxResult.byteLength > 100, "DOCX buffer must be generated");
+  const docxDocXml = await readZipTextFile(docxResult, "word/document.xml");
+  assert.ok(docxDocXml !== null, "DOCX must contain word/document.xml");
+  assert.ok(docxDocXml.includes("TestReport"), "Extracted text in DOCX must contain original PDF words");
+  console.log("  ✓ PDF to Word (DOCX) conversion passed");
+
+  // 16. DOCX to PDF In-Browser Converter Test
+  console.log("16. Testing Word (DOCX) to PDF Conversion...");
+  const convertedPdfBytes = await convertDocxToPdf(docxResult);
+  assert.ok(convertedPdfBytes.byteLength > 100, "PDF buffer must be generated");
+  const loadedPdfFromDocx = await PDFDocument.load(convertedPdfBytes);
+  assert.ok(loadedPdfFromDocx.getPageCount() >= 1, "PDF converted from Word must have at least 1 page");
+  console.log("  ✓ Word (DOCX) to PDF conversion passed");
+
   console.log("\n=========================================");
-  console.log("  ALL 13 PDF LOGIC TESTS PASSED CLEANLY! ");
+  console.log("  ALL 16 PDF & WORD LOGIC TESTS PASSED CLEANLY! ");
   console.log("=========================================\n");
 }
 
