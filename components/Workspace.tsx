@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import {
   DndContext,
   closestCenter,
@@ -29,6 +30,8 @@ import {
   Check,
   CheckCheck,
   Sparkles,
+  X,
+  AlertCircle,
 } from "lucide-react";
 import { Tool } from "@/lib/tools";
 import { mergePDFs } from "@/lib/pdf/client-merge";
@@ -42,6 +45,12 @@ import { compressPDFClient, CompressionLevel } from "@/lib/pdf/client-compress";
 import { signPDF } from "@/lib/pdf/client-sign";
 import { convertPdfToDocx } from "@/lib/pdf/client-pdf-to-docx";
 import { convertDocxToPdf } from "@/lib/pdf/client-docx-to-pdf";
+import { convertPdfToJpg } from "@/lib/pdf/client-pdf-to-jpg";
+import { cropPDF } from "@/lib/pdf/client-crop";
+import { repairPDFClient } from "@/lib/pdf/client-repair";
+import { organizePDF } from "@/lib/pdf/client-organize";
+import { unlockPDFClient } from "@/lib/pdf/client-protect";
+import { convertHtmlToPdf } from "@/lib/pdf/client-html-to-pdf";
 
 export interface WorkspaceFileItem {
   id: string;
@@ -227,6 +236,9 @@ export default function Workspace({
   const [pageNumberPos, setPageNumberPos] = useState<PageNumberPosition>("bottom-center");
   const [pageNumberFormat, setPageNumberFormat] = useState<PageNumberFormat>("page_n_of_total");
   const [imageOrientation, setImageOrientation] = useState<"portrait" | "landscape">("portrait");
+  const [cropMarginPercent, setCropMarginPercent] = useState<number>(10);
+  const [jpgQuality, setJpgQuality] = useState<number>(0.92);
+  const [showCloudModal, setShowCloudModal] = useState<boolean>(false);
 
   // Signature canvas ref
   const sigCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -518,10 +530,78 @@ export default function Workspace({
           originalSize: items[0].size,
           newSize: pdfBytes.byteLength,
         });
-      } else {
-        throw new Error(
-          `${tool.name} requires the background conversion microservice. Launching docker worker...`
+      } else if (tool.id === "pdf-to-jpg") {
+        const buffer = await items[0].file.arrayBuffer();
+        const baseName = items[0].name.replace(/\.[^/.]+$/, "");
+        const result = await convertPdfToJpg(buffer, baseName, { quality: jpgQuality });
+        onComplete({
+          fileName: result.fileName,
+          bytes: result.bytes,
+          multipleFiles: result.multipleFiles,
+          originalSize: items[0].size,
+          newSize: result.bytes.byteLength,
+        });
+      } else if (tool.id === "crop-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const m = cropMarginPercent / 100;
+        const cropArea = {
+          x: 595.28 * m,
+          y: 841.89 * m,
+          width: 595.28 * (1 - 2 * m),
+          height: 841.89 * (1 - 2 * m),
+        };
+        const croppedBytes = await cropPDF(buffer, cropArea);
+        onComplete({
+          fileName: `cropped_${items[0].name}`,
+          bytes: croppedBytes,
+          originalSize: items[0].size,
+          newSize: croppedBytes.byteLength,
+        });
+      } else if (tool.id === "organize-pdf") {
+        const fileBuffers = await Promise.all(
+          items.map(async (item) => ({
+            buffer: await item.file.arrayBuffer(),
+            rotation: item.rotation,
+          }))
         );
+        const organizedBytes = await organizePDF(fileBuffers);
+        onComplete({
+          fileName: `organized_${items[0].name}`,
+          bytes: organizedBytes,
+          originalSize: items[0].size,
+          newSize: organizedBytes.byteLength,
+        });
+      } else if (tool.id === "repair-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const repairResult = await repairPDFClient(buffer);
+        onComplete({
+          fileName: `repaired_${items[0].name}`,
+          bytes: repairResult.bytes,
+          originalSize: repairResult.originalSize,
+          newSize: repairResult.newSize,
+        });
+      } else if (tool.id === "unlock-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const unlockedBytes = await unlockPDFClient(buffer);
+        onComplete({
+          fileName: `unlocked_${items[0].name}`,
+          bytes: unlockedBytes,
+          originalSize: items[0].size,
+          newSize: unlockedBytes.byteLength,
+        });
+      } else if (tool.id === "html-to-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const baseName = items[0].name.replace(/\.[^/.]+$/, "");
+        const pdfBytes = await convertHtmlToPdf(buffer);
+        onComplete({
+          fileName: `${baseName}.pdf`,
+          bytes: pdfBytes,
+          originalSize: items[0].size,
+          newSize: pdfBytes.byteLength,
+        });
+      } else {
+        // Cloud-dependent or advanced API tool: display friendly Cloud Modal
+        setShowCloudModal(true);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -945,6 +1025,92 @@ export default function Workspace({
               </div>
             )}
 
+            {/* PDF TO JPG OPTIONS */}
+            {tool.id === "pdf-to-jpg" && (
+              <div className="space-y-3">
+                <span className="text-xs font-bold text-slate-700 block">Output Quality:</span>
+                <div className="grid grid-cols-2 gap-2 text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setJpgQuality(0.95)}
+                    className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
+                      jpgQuality >= 0.9
+                        ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    High (144 DPI)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setJpgQuality(0.80)}
+                    className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
+                      jpgQuality < 0.9
+                        ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    Standard (72 DPI)
+                  </button>
+                </div>
+                <span className="text-[11px] text-slate-400 block text-center">
+                  Multi-page documents will be bundled into a ZIP archive.
+                </span>
+              </div>
+            )}
+
+            {/* CROP PDF OPTIONS */}
+            {tool.id === "crop-pdf" && (
+              <div className="space-y-3">
+                <span className="text-xs font-bold text-slate-700 block">Trim Margins:</span>
+                <div className="grid grid-cols-3 gap-2 text-xs font-bold">
+                  {[5, 10, 15].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => setCropMarginPercent(pct)}
+                      className={`py-2.5 px-2 rounded-2xl border text-center transition-all ${
+                        cropMarginPercent === pct
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {pct}%
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[11px] text-slate-400 block text-center">
+                  Trims outer whitespace uniformly on all document pages.
+                </span>
+              </div>
+            )}
+
+            {/* REPAIR PDF INFO */}
+            {tool.id === "repair-pdf" && (
+              <div className="p-4 rounded-2xl bg-teal-50/80 border border-teal-200/80 text-teal-900 text-xs space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-teal-800">
+                  <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+                  <span>Client-Side PDF Sanitizer</span>
+                </div>
+                <p className="text-teal-700/90 leading-relaxed">
+                  Reconstructs damaged cross-reference tables, clears invalid trailer pointers, and re-indexes indirect object streams into a compliant PDF.
+                </p>
+              </div>
+            )}
+
+            {/* ORGANIZE PDF INFO */}
+            {tool.id === "organize-pdf" && (
+              <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 text-indigo-900 text-xs space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-indigo-800">
+                  <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>Interactive Visual Organizer</span>
+                </div>
+                <p className="text-indigo-700/90 leading-relaxed">
+                  Drag and drop document cards to reorder. Use hover buttons to rotate individual cards or remove them before stitching into a unified PDF.
+                </p>
+              </div>
+            )}
+
             {/* Big Action Button */}
             <button
               type="button"
@@ -967,6 +1133,50 @@ export default function Workspace({
           </div>
         </div>
       </div>
+
+      {/* Cloud Microservice Notice Modal */}
+      {showCloudModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
+            <button
+              onClick={() => setShowCloudModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2">
+              Cloud Service In Rollout
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed mb-4">
+              <strong>{tool.name}</strong> requires specialized server-side rendering or heavy OCR binaries. Our background cloud microservices are currently in staged rollout.
+            </p>
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs text-slate-600 space-y-2 mb-6">
+              <p className="font-bold text-slate-800">💡 Free In-Browser Alternatives:</p>
+              <ul className="list-disc list-inside space-y-1.5 text-slate-600">
+                <li>Export as PDF directly from Microsoft Office or Google Docs via <em>File &gt; Save as PDF</em>.</li>
+                <li>Use our 100% in-browser converters: <strong>PDF to Word</strong>, <strong>Word to PDF</strong>, <strong>JPG to PDF</strong>, and <strong>PDF to JPG</strong>.</li>
+              </ul>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <Link
+                href="/"
+                className="btn-primary w-full text-center py-3.5 rounded-2xl font-bold"
+              >
+                Browse All Tools
+              </Link>
+              <button
+                onClick={() => setShowCloudModal(false)}
+                className="btn-secondary w-full py-3.5 rounded-2xl font-bold text-slate-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

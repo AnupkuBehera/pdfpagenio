@@ -56,9 +56,15 @@ export default function ResultScreen({
     });
 
     if (fileBytes) {
-      const isDocx = fileName.toLowerCase().endsWith(".docx");
-      const mimeType = isDocx
+      const lower = fileName.toLowerCase();
+      const mimeType = lower.endsWith(".docx")
         ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        : lower.endsWith(".zip")
+        ? "application/zip"
+        : lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+        ? "image/jpeg"
+        : lower.endsWith(".png")
+        ? "image/png"
         : "application/pdf";
       const blob = new Blob([fileBytes as any], { type: mimeType });
       const url = URL.createObjectURL(blob);
@@ -86,9 +92,15 @@ export default function ResultScreen({
       link.click();
     } else if (multipleFiles && multipleFiles.length > 0) {
       multipleFiles.forEach((file) => {
-        const isDocx = file.fileName.toLowerCase().endsWith(".docx");
-        const mimeType = isDocx
+        const lower = file.fileName.toLowerCase();
+        const mimeType = lower.endsWith(".docx")
           ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          : lower.endsWith(".zip")
+          ? "application/zip"
+          : lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+          ? "image/jpeg"
+          : lower.endsWith(".png")
+          ? "image/png"
           : "application/pdf";
         const blob = new Blob([file.bytes as any], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -118,11 +130,15 @@ export default function ResultScreen({
       <h2 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight mb-2">
         {fileName.toLowerCase().endsWith(".docx")
           ? "Word Document Ready!"
-          : "PDF Successfully Processed!"}
+          : fileName.toLowerCase().endsWith(".zip") || fileName.toLowerCase().endsWith(".jpg")
+          ? "Images Ready for Download!"
+          : "Document Successfully Processed!"}
       </h2>
       <p className="text-sm text-slate-500 mb-6">
         {fileName.toLowerCase().endsWith(".docx")
           ? "Your editable Word document (.docx) is ready. The download started automatically."
+          : fileName.toLowerCase().endsWith(".zip") || fileName.toLowerCase().endsWith(".jpg")
+          ? "Your high-resolution images are ready. The download started automatically."
           : "Your document is ready. The download started automatically in your browser."}
       </p>
 
@@ -167,6 +183,10 @@ export default function ResultScreen({
           <span>
             {fileName.toLowerCase().endsWith(".docx")
               ? "Download Word Document (.docx)"
+              : fileName.toLowerCase().endsWith(".zip")
+              ? "Download Images (ZIP)"
+              : fileName.toLowerCase().endsWith(".jpg")
+              ? "Download Image (.jpg)"
               : `Download ${tool.name}`}
           </span>
         </button>

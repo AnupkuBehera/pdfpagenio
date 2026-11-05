@@ -712,7 +712,7 @@ export const TOOLS: Tool[] = [
     category: "convert-to",
     icon: "Globe",
     color: "#2563EB",
-    clientExecutable: false,
+    clientExecutable: true,
     acceptedFileTypes: [".html", ".htm", "text/html"],
     maxFiles: 5,
     seo: {

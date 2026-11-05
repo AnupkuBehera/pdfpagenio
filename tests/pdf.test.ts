@@ -11,6 +11,11 @@ import { compressPDFClient } from "../lib/pdf/client-compress";
 import { createZip, extractZip, readZipTextFile } from "../lib/pdf/zip-utils";
 import { convertPdfToDocx } from "../lib/pdf/client-pdf-to-docx";
 import { convertDocxToPdf } from "../lib/pdf/client-docx-to-pdf";
+import { convertPdfToJpg } from "../lib/pdf/client-pdf-to-jpg";
+import { repairPDFClient } from "../lib/pdf/client-repair";
+import { organizePDF } from "../lib/pdf/client-organize";
+import { unlockPDFClient } from "../lib/pdf/client-protect";
+import { convertHtmlToPdf } from "../lib/pdf/client-html-to-pdf";
 
 async function createTestPDF(numPages = 3, label = "Doc") {
   const doc = await PDFDocument.create();
@@ -204,8 +209,70 @@ async function runTests() {
   assert.ok(loadedPdfFromDocx.getPageCount() >= 1, "PDF converted from Word must have at least 1 page");
   console.log("  ✓ Word (DOCX) to PDF conversion passed");
 
+  // 17. PDF to JPG In-Browser Converter Test
+  console.log("17. Testing PDF to JPG Conversion...");
+  const jpgResult = await convertPdfToJpg(samplePdf, "sample");
+  assert.ok(jpgResult.bytes.byteLength > 50, "JPG/ZIP bytes must be generated");
+  assert.strictEqual(jpgResult.pageCount, 2, "Page count must match");
+  console.log("  ✓ PDF to JPG conversion passed");
+
+  // 18. PDF Repair Engine Test
+  console.log("18. Testing PDF Repair & Re-indexing...");
+  const repairResult = await repairPDFClient(samplePdf);
+  assert.ok(repairResult.bytes.byteLength > 100, "Repaired bytes must be generated");
+  const repairedDoc = await PDFDocument.load(repairResult.bytes);
+  assert.strictEqual(repairedDoc.getPageCount(), 2, "Page count must be preserved after repair");
+  console.log("  ✓ PDF Repair passed");
+
+  // 19. PDF Organize & Stitch Test
+  console.log("19. Testing PDF Organization...");
+  const organizedBytes = await organizePDF([
+    { buffer: samplePdf, rotation: 90 },
+    { buffer: samplePdf, rotation: 0 },
+  ]);
+  const organizedDoc = await PDFDocument.load(organizedBytes);
+  assert.strictEqual(organizedDoc.getPageCount(), 4, "Organized PDF should concatenate 2 + 2 = 4 pages");
+  console.log("  ✓ PDF Organization passed");
+
+  // 20. PDF Crop Bounds Test
+  console.log("20. Testing PDF Cropping...");
+  const croppedBytes20 = await cropPDF(samplePdf, { x: 50, y: 50, width: 300, height: 500 });
+  const croppedDoc20 = await PDFDocument.load(croppedBytes20);
+  const cropBox20 = croppedDoc20.getPages()[0].getCropBox();
+  assert.strictEqual(cropBox20.width, 300);
+  assert.strictEqual(cropBox20.height, 500);
+  console.log("  ✓ PDF Cropping passed");
+
+  // 21. PDF Unlock Test
+  console.log("21. Testing PDF Unlock...");
+  const unlockedBytes = await unlockPDFClient(samplePdf);
+  assert.ok(unlockedBytes.byteLength > 100);
+  console.log("  ✓ PDF Unlock passed");
+
+  // 22. HTML to PDF Conversion Test
+  console.log("22. Testing HTML to PDF Conversion...");
+  const sampleHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head><title>Test</title></head>
+      <body>
+        <h1>Document Title</h1>
+        <p>This is a paragraph with <b>bold</b> text.</p>
+        <ul>
+          <li>Bullet 1</li>
+          <li>Bullet 2</li>
+        </ul>
+      </body>
+    </html>
+  `;
+  const htmlPdfBytes = await convertHtmlToPdf(sampleHtml);
+  assert.ok(htmlPdfBytes.byteLength > 100, "HTML to PDF buffer must be generated");
+  const htmlDoc = await PDFDocument.load(htmlPdfBytes);
+  assert.strictEqual(htmlDoc.getPageCount(), 1, "HTML PDF should have 1 page");
+  console.log("  ✓ HTML to PDF conversion passed");
+
   console.log("\n=========================================");
-  console.log("  ALL 16 PDF & WORD LOGIC TESTS PASSED CLEANLY! ");
+  console.log("  ALL 22 PDF & CONVERSION TESTS PASSED! ");
   console.log("=========================================\n");
 }
 
