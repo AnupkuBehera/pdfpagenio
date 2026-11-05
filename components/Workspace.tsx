@@ -51,6 +51,8 @@ import { repairPDFClient } from "@/lib/pdf/client-repair";
 import { organizePDF } from "@/lib/pdf/client-organize";
 import { unlockPDFClient } from "@/lib/pdf/client-protect";
 import { convertHtmlToPdf } from "@/lib/pdf/client-html-to-pdf";
+import { addBatesStamping, BatesPosition } from "@/lib/pdf/client-bates";
+import { flattenPDFClient } from "@/lib/pdf/client-flatten";
 
 export interface WorkspaceFileItem {
   id: string;
@@ -236,9 +238,14 @@ export default function Workspace({
   const [pageNumberPos, setPageNumberPos] = useState<PageNumberPosition>("bottom-center");
   const [pageNumberFormat, setPageNumberFormat] = useState<PageNumberFormat>("page_n_of_total");
   const [imageOrientation, setImageOrientation] = useState<"portrait" | "landscape">("portrait");
+  const [pageSizeChoice, setPageSizeChoice] = useState<"a4" | "letter" | "legal">("letter");
   const [cropMarginPercent, setCropMarginPercent] = useState<number>(10);
   const [jpgQuality, setJpgQuality] = useState<number>(0.92);
   const [showCloudModal, setShowCloudModal] = useState<boolean>(false);
+  const [batesPrefix, setBatesPrefix] = useState<string>("PLAINTIFF_");
+  const [batesStartNumber, setBatesStartNumber] = useState<number>(1);
+  const [batesDigits, setBatesDigits] = useState<number>(6);
+  const [batesPosition, setBatesPosition] = useState<BatesPosition>("bottom-right");
 
   // Signature canvas ref
   const sigCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -481,7 +488,7 @@ export default function Workspace({
         );
         const pdfBytes = await imagesToPDF(images, {
           orientation: imageOrientation,
-          pageSize: "a4",
+          pageSize: pageSizeChoice,
         });
         onComplete({
           fileName: "converted_images.pdf",
@@ -598,6 +605,29 @@ export default function Workspace({
           bytes: pdfBytes,
           originalSize: items[0].size,
           newSize: pdfBytes.byteLength,
+        });
+      } else if (tool.id === "bates-stamp-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const batesBytes = await addBatesStamping(buffer, {
+          prefix: batesPrefix,
+          startNumber: batesStartNumber,
+          digitPadding: batesDigits,
+          position: batesPosition,
+        });
+        onComplete({
+          fileName: `bates_${items[0].name}`,
+          bytes: batesBytes,
+          originalSize: items[0].size,
+          newSize: batesBytes.byteLength,
+        });
+      } else if (tool.id === "flatten-pdf") {
+        const buffer = await items[0].file.arrayBuffer();
+        const flatResult = await flattenPDFClient(buffer);
+        onComplete({
+          fileName: `flattened_${items[0].name}`,
+          bytes: flatResult.bytes,
+          originalSize: flatResult.originalSize,
+          newSize: flatResult.newSize,
         });
       } else {
         // Cloud-dependent or advanced API tool: display friendly Cloud Modal
@@ -801,9 +831,12 @@ export default function Workspace({
                 </span>
                 <div className="grid grid-cols-1 gap-2">
                   {[
-                    { kb: 200, label: "Under 200 KB", sub: "UPSC, SSC, State PSC & Degree Certificates" },
-                    { kb: 100, label: "Under 100 KB", sub: "Passport, Visa & Identity Documents" },
-                    { kb: 50, label: "Under 50 KB", sub: "Signatures & Small Identity Photos" },
+                    { kb: 6144, label: "Under 6 MB (USCIS)", sub: "NVC, CEAC & US Immigration Portals" },
+                    { kb: 2048, label: "Under 2 MB (College)", sub: "Common App, Coalition & Transcripts" },
+                    { kb: 10240, label: "Under 10 MB (ECF)", sub: "US Federal Court Electronic Filing" },
+                    { kb: 200, label: "Under 200 KB", sub: "Government Exam Forms & Degree Certificates" },
+                    { kb: 100, label: "Under 100 KB", sub: "Passport, Visa & Identity Scans" },
+                    { kb: 50, label: "Under 50 KB", sub: "Signatures & Small Photos" },
                   ].map((preset) => (
                     <button
                       key={preset.kb}
@@ -970,31 +1003,72 @@ export default function Workspace({
 
             {/* JPG TO PDF OPTIONS */}
             {tool.id === "jpg-to-pdf" && (
-              <div className="space-y-3">
-                <span className="text-xs font-bold text-slate-700 block">Orientation:</span>
-                <div className="grid grid-cols-2 gap-2 text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setImageOrientation("portrait")}
-                    className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
-                      imageOrientation === "portrait"
-                        ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
-                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    Portrait
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setImageOrientation("landscape")}
-                    className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
-                      imageOrientation === "landscape"
-                        ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
-                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    Landscape
-                  </button>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-xs font-bold text-slate-700 block mb-1.5">Page Format:</span>
+                  <div className="grid grid-cols-3 gap-1.5 text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setPageSizeChoice("letter")}
+                      className={`py-2 px-1.5 rounded-xl border text-center transition-all ${
+                        pageSizeChoice === "letter"
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      US Letter
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPageSizeChoice("legal")}
+                      className={`py-2 px-1.5 rounded-xl border text-center transition-all ${
+                        pageSizeChoice === "legal"
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      US Legal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPageSizeChoice("a4")}
+                      className={`py-2 px-1.5 rounded-xl border text-center transition-all ${
+                        pageSizeChoice === "a4"
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      A4
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-xs font-bold text-slate-700 block mb-1.5">Orientation:</span>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setImageOrientation("portrait")}
+                      className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
+                        imageOrientation === "portrait"
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Portrait
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageOrientation("landscape")}
+                      className={`py-2.5 px-3 rounded-2xl border text-center transition-all ${
+                        imageOrientation === "landscape"
+                          ? "bg-brand-50 border-brand-500 text-brand-700 shadow-sm"
+                          : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Landscape
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1107,6 +1181,78 @@ export default function Workspace({
                 </div>
                 <p className="text-indigo-700/90 leading-relaxed">
                   Drag and drop document cards to reorder. Use hover buttons to rotate individual cards or remove them before stitching into a unified PDF.
+                </p>
+              </div>
+            )}
+
+            {/* BATES STAMPING OPTIONS */}
+            {tool.id === "bates-stamp-pdf" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-50/80 rounded-2xl border border-purple-200/80 text-[11px] text-purple-900 font-medium">
+                  <strong>US Legal Discovery Standard:</strong> Sequentially indexes pages for court and litigation filings.
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Bates Prefix:</label>
+                  <input
+                    type="text"
+                    value={batesPrefix}
+                    onChange={(e) => setBatesPrefix(e.target.value)}
+                    placeholder="e.g. PLAINTIFF_ or CONFIDENTIAL-"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Start Number:</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={batesStartNumber}
+                      onChange={(e) => setBatesStartNumber(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Digit Padding:</label>
+                    <select
+                      value={batesDigits}
+                      onChange={(e) => setBatesDigits(parseInt(e.target.value, 10))}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="4">4 Digits (0001)</option>
+                      <option value="6">6 Digits (000001)</option>
+                      <option value="8">8 Digits (00000001)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Position on Page:</label>
+                  <select
+                    value={batesPosition}
+                    onChange={(e) => setBatesPosition(e.target.value as BatesPosition)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="bottom-right">Bottom Right (Standard)</option>
+                    <option value="bottom-center">Bottom Center</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                  </select>
+                </div>
+                <div className="p-2.5 bg-slate-50 rounded-xl text-center font-mono text-xs font-bold text-purple-700 border border-slate-200">
+                  Preview: {batesPrefix}{String(batesStartNumber).padStart(batesDigits, "0")}
+                </div>
+              </div>
+            )}
+
+            {/* FLATTEN PDF INFO */}
+            {tool.id === "flatten-pdf" && (
+              <div className="p-4 rounded-2xl bg-rose-50/80 border border-rose-200/80 text-rose-900 text-xs space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-rose-800">
+                  <Sparkles className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>US Court CM/ECF & Real Estate Standard</span>
+                </div>
+                <p className="text-rose-700/90 leading-relaxed">
+                  Permanently burns interactive AcroForms, text fields, checkboxes, and signatures into static vector elements. Prevents values from being tampered with or cleared by different PDF viewers.
                 </p>
               </div>
             )}

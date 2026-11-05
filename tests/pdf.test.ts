@@ -16,6 +16,9 @@ import { repairPDFClient } from "../lib/pdf/client-repair";
 import { organizePDF } from "../lib/pdf/client-organize";
 import { unlockPDFClient } from "../lib/pdf/client-protect";
 import { convertHtmlToPdf } from "../lib/pdf/client-html-to-pdf";
+import { addBatesStamping, formatBatesNumber } from "../lib/pdf/client-bates";
+import { flattenPDFClient } from "../lib/pdf/client-flatten";
+import { imagesToPDF } from "../lib/pdf/client-images";
 
 async function createTestPDF(numPages = 3, label = "Doc") {
   const doc = await PDFDocument.create();
@@ -271,8 +274,68 @@ async function runTests() {
   assert.strictEqual(htmlDoc.getPageCount(), 1, "HTML PDF should have 1 page");
   console.log("  ✓ HTML to PDF conversion passed");
 
+  // 23. US Legal Bates Stamping Test
+  console.log("23. Testing US Legal Bates Stamping...");
+  const batesFormatted = formatBatesNumber(0, "US-COURT-", "-CONF", 100, 6);
+  assert.strictEqual(batesFormatted, "US-COURT-000100-CONF");
+
+  const batesBytes = await addBatesStamping(samplePdf, {
+    prefix: "PLAINTIFF_",
+    startNumber: 1,
+    digitPadding: 6,
+    position: "bottom-right",
+    drawBox: true,
+  });
+  assert.ok(batesBytes.byteLength > 100, "Bates stamped PDF buffer should be created");
+  const batesDoc = await PDFDocument.load(batesBytes);
+  assert.strictEqual(batesDoc.getPageCount(), 2);
+  console.log("  ✓ US Legal Bates Stamping passed");
+
+  // 24. US Court ECF & Real Estate PDF Flattening Test
+  console.log("24. Testing PDF Form Flattening...");
+  const formDoc = await PDFDocument.create();
+  const pageForm = formDoc.addPage([500, 500]);
+  const form = formDoc.getForm();
+  const testField = form.createTextField("litigationCaseNum");
+  testField.setText("CASE-2026-US-892");
+  testField.addToPage(pageForm, { x: 50, y: 400, width: 200, height: 25 });
+  const formBytes = await formDoc.save();
+
+  const flattenResult = await flattenPDFClient(formBytes);
+  assert.ok(flattenResult.bytes.byteLength > 100);
+  const flattenedDoc = await PDFDocument.load(flattenResult.bytes);
+  assert.strictEqual(flattenedDoc.getForm().getFields().length, 0, "Interactive form fields must be flattened to 0");
+  console.log("  ✓ PDF Form Flattening passed");
+
+  // 25. US Paper Standards (Letter & Legal) in Image to PDF
+  console.log("25. Testing US Paper Standards (Letter & Legal)...");
+  const nodeBuf = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+    "base64"
+  );
+  const samplePngBuffer = nodeBuf.buffer.slice(nodeBuf.byteOffset, nodeBuf.byteOffset + nodeBuf.byteLength);
+
+  const letterPdf = await imagesToPDF(
+    [{ buffer: samplePngBuffer, type: "png", name: "test.png" }],
+    { pageSize: "letter" }
+  );
+  const letterDoc = await PDFDocument.load(letterPdf);
+  const letterPage = letterDoc.getPages()[0];
+  assert.strictEqual(Math.round(letterPage.getWidth()), 612, "US Letter width should be 612pt");
+  assert.strictEqual(Math.round(letterPage.getHeight()), 792, "US Letter height should be 792pt");
+
+  const legalPdf = await imagesToPDF(
+    [{ buffer: samplePngBuffer, type: "png", name: "test.png" }],
+    { pageSize: "legal" }
+  );
+  const legalDoc = await PDFDocument.load(legalPdf);
+  const legalPage = legalDoc.getPages()[0];
+  assert.strictEqual(Math.round(legalPage.getWidth()), 612, "US Legal width should be 612pt");
+  assert.strictEqual(Math.round(legalPage.getHeight()), 1008, "US Legal height should be 1008pt");
+  console.log("  ✓ US Paper Standards (Letter & Legal) passed");
+
   console.log("\n=========================================");
-  console.log("  ALL 22 PDF & CONVERSION TESTS PASSED! ");
+  console.log("  ALL 25 PDF & CONVERSION TESTS PASSED! ");
   console.log("=========================================\n");
 }
 

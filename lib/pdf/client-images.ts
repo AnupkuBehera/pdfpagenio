@@ -8,7 +8,7 @@ export interface ImageInput {
 
 export interface ImageToPdfOptions {
   orientation?: "portrait" | "landscape" | "fit";
-  pageSize?: "a4" | "letter" | "fit";
+  pageSize?: "a4" | "letter" | "legal" | "fit";
   margin?: number;
 }
 
@@ -36,6 +36,9 @@ export async function imagesToPDF(
     if (pageSize === "letter") {
       targetPageWidth = PageSizes.Letter[0];
       targetPageHeight = PageSizes.Letter[1];
+    } else if (pageSize === "legal") {
+      targetPageWidth = 612.0;
+      targetPageHeight = 1008.0;
     } else if (pageSize === "fit") {
       targetPageWidth = imgWidth + margin * 2;
       targetPageHeight = imgHeight + margin * 2;

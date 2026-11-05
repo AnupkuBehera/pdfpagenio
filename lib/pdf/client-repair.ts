@@ -35,3 +35,4 @@ export async function repairPDFClient(
     pageCount: Math.max(1, pageCount),
   };
 }
+

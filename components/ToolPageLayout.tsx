@@ -112,6 +112,12 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
         <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
           {tool.longDescription}
         </p>
+        <div className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-slate-500">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
+            <Shield className="w-3.5 h-3.5 text-emerald-600" />
+            <span>100% On-Device &bull; HIPAA, CCPA &amp; FERPA Safe</span>
+          </span>
+        </div>
       </section>
 
       {/* Main Interactive Stage Container */}

@@ -964,6 +964,40 @@ export const TOOLS: Tool[] = [
     }
   },
   {
+    id: "bates-stamp-pdf",
+    slug: "bates-stamp-pdf",
+    name: "Bates Stamping",
+    badge: "US Legal",
+    shortDescription: "Stamp sequential Bates numbers on PDF discovery documents for US court filings.",
+    longDescription: "Index legal documents with sequential Bates numbering codes for US litigation, trial proceedings, and court discovery. Customize prefix, starting number, digit padding, and position.",
+    category: "edit",
+    icon: "ListOrdered",
+    color: "#7C3AED",
+    clientExecutable: true,
+    acceptedFileTypes: ["application/pdf"],
+    maxFiles: 10,
+    seo: {
+      title: "Bates Numbering PDF Online - Free US Legal Bates Stamping",
+      description: "Stamp sequential Bates numbers on PDF discovery documents for US court filings. 100% free, private, and instant on your device.",
+      keywords: ["bates numbering pdf", "bates stamping online", "legal discovery bates stamp", "free bates numbering", "court filing bates numbers"],
+      faq: [
+        {
+          question: "What is Bates numbering used for in the United States?",
+          answer: "Bates numbering is the US legal standard used by attorneys, paralegals, and courts during discovery to assign unique, sequential identification numbers to pages in litigation documents."
+        },
+        {
+          question: "Can I customize the prefix and number of digits?",
+          answer: "Yes! You can specify any custom prefix (such as PLAINTIFF_, DEFENDANT_, or CONFIDENTIAL-), start number, and digit padding (e.g., 6 digits for 000001)."
+        }
+      ]
+    },
+    howTo: [
+      "Upload your legal PDF document.",
+      "Set your custom prefix, starting number, and padding length.",
+      "Select stamp position (Bottom Right, Bottom Center, Top Right) and click 'Bates Stamping'."
+    ]
+  },
+  {
     id: "watermark-pdf",
     slug: "watermark-pdf",
     name: "Add Watermark",
@@ -1088,6 +1122,36 @@ export const TOOLS: Tool[] = [
       hi: { slug: "unlock-pdf", name: "Unlock PDF", description: "PDF से पासवर्ड और सुरक्षा प्रतिबंध हटाएं।", reviewed: true },
       vi: { slug: "mo-khoa-file-pdf", name: "Mở khóa file PDF", description: "Xóa mật khẩu và hạn chế bảo mật khỏi tệp PDF nhanh chóng.", reviewed: false },
     }
+  },
+  {
+    id: "flatten-pdf",
+    slug: "flatten-pdf",
+    name: "Flatten PDF",
+    badge: "US Court ECF",
+    shortDescription: "Permanently merge interactive form fields and signatures into static vector PDF pages.",
+    longDescription: "Flatten interactive AcroForms, text inputs, radio buttons, and digital signatures into non-editable static PDF vector graphics. Required for US Federal Court (CM/ECF) and real estate closing contracts.",
+    category: "security",
+    icon: "ShieldCheck",
+    color: "#E11D48",
+    clientExecutable: true,
+    acceptedFileTypes: ["application/pdf"],
+    maxFiles: 10,
+    seo: {
+      title: "Flatten PDF Online - Free PDF Form & Signature Flattener",
+      description: "Permanently flatten interactive PDF forms, signatures, and annotations. Compliant with US Federal Court CM/ECF and real estate contract standards.",
+      keywords: ["flatten pdf", "flatten pdf form fields", "flatten pdf for court", "flatten pdf online free", "ecf compliant pdf flatten"],
+      faq: [
+        {
+          question: "Why do US courts and real estate agencies require PDF flattening?",
+          answer: "Flattening locks all filled form fields, checkboxes, and signatures into the page content so that values cannot be tampered with or accidentally cleared by different PDF viewers."
+        }
+      ]
+    },
+    howTo: [
+      "Upload your PDF document containing form fields or signatures.",
+      "Click 'Flatten PDF'.",
+      "Download your secure, tamper-proof flattened document."
+    ]
   },
   {
     id: "protect-pdf",
