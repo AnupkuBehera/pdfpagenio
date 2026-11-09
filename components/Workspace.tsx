@@ -494,10 +494,10 @@ export default function Workspace({
           fileName: "converted_images.pdf",
           bytes: pdfBytes,
         });
-      } else if (tool.id === "sign-pdf") {
+      } else if (tool.id === "sign-pdf" || tool.id === "edit-pdf") {
         const buffer = await items[0].file.arrayBuffer();
         const canvas = sigCanvasRef.current;
-        if (!canvas) throw new Error("Signature pad unavailable.");
+        if (!canvas) throw new Error("Drawing canvas unavailable.");
         const dataUrl = canvas.toDataURL("image/png");
         const signedBytes = await signPDF(buffer, dataUrl, {
           pageNumber: 1,
@@ -507,7 +507,7 @@ export default function Workspace({
           height: 60,
         });
         onComplete({
-          fileName: `signed_${items[0].name}`,
+          fileName: tool.id === "edit-pdf" ? `edited_${items[0].name}` : `signed_${items[0].name}`,
           bytes: signedBytes,
         });
       } else if (tool.id === "pdf-to-word") {
@@ -972,11 +972,13 @@ export default function Workspace({
               </div>
             )}
 
-            {/* SIGNATURE PAD */}
-            {tool.id === "sign-pdf" && (
+            {/* SIGNATURE / ANNOTATION PAD */}
+            {(tool.id === "sign-pdf" || tool.id === "edit-pdf") && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700">Draw Signature:</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {tool.id === "edit-pdf" ? "Draw Annotation or Markup:" : "Draw Signature:"}
+                  </span>
                   <button
                     type="button"
                     onClick={clearSignature}
@@ -996,7 +998,7 @@ export default function Workspace({
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl cursor-crosshair touch-none shadow-inner"
                 />
                 <span className="text-[11px] text-slate-400 block text-center">
-                  Sign with trackpad, mouse, or touch
+                  {tool.id === "edit-pdf" ? "Draw or annotate with trackpad, mouse, or touch" : "Sign with trackpad, mouse, or touch"}
                 </span>
               </div>
             )}

@@ -20,6 +20,7 @@ import { addBatesStamping, formatBatesNumber } from "../lib/pdf/client-bates";
 import { flattenPDFClient } from "../lib/pdf/client-flatten";
 import { imagesToPDF } from "../lib/pdf/client-images";
 import { onRequest } from "../functions/_middleware";
+import { TOOLS, CATEGORIES, getToolBySlug } from "../lib/tools";
 
 async function createTestPDF(numPages = 3, label = "Doc") {
   const doc = await PDFDocument.create();
@@ -379,8 +380,36 @@ async function runTests() {
   assert.strictEqual(resClean.status, 200);
   console.log("  ✓ Cloudflare Pages 301 Edge Middleware passed (5/5 scenarios verified)");
 
+  // 27. SEO Content Quality & Categories Coverage Test
+  console.log("27. Testing SEO content quality and category integrity...");
+  assert.strictEqual(CATEGORIES.length, 7, "All 7 categories must be defined");
+  for (const cat of CATEGORIES) {
+    const toolsInCat = TOOLS.filter((t) => t.category === cat.id);
+    assert.ok(toolsInCat.length > 0, `Category ${cat.id} must have at least one tool`);
+  }
+
+  const editPdfTool = getToolBySlug("edit-pdf");
+  assert.ok(editPdfTool, "edit-pdf tool must exist");
+  assert.ok(editPdfTool.seo.faq.length >= 4, "edit-pdf must have at least 4 detailed FAQs");
+
+  let totalReviewedLocalized = 0;
+  for (const tool of TOOLS) {
+    if (tool.localized) {
+      for (const [locale, info] of Object.entries(tool.localized)) {
+        if (info.reviewed) {
+          totalReviewedLocalized++;
+          assert.ok(info.slug.length > 0, `Localized tool ${tool.id} [${locale}] missing slug`);
+          assert.ok(info.name.length > 0, `Localized tool ${tool.id} [${locale}] missing name`);
+          assert.ok(info.description.length > 0, `Localized tool ${tool.id} [${locale}] missing description`);
+        }
+      }
+    }
+  }
+  assert.ok(totalReviewedLocalized >= 50, `Expected at least 50 reviewed localized tools, found ${totalReviewedLocalized}`);
+  console.log(`  ✓ Content quality verified across ${TOOLS.length} tools and ${totalReviewedLocalized} reviewed localized routes`);
+
   console.log("\n=========================================");
-  console.log("  ALL 26 TESTS PASSED! (PDF + REDIRECTS) ");
+  console.log("  ALL 27 TESTS PASSED! (PDF + REDIRECTS + SEO) ");
   console.log("=========================================\n");
 }
 

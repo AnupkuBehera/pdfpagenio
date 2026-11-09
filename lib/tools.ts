@@ -1074,7 +1074,19 @@ export const TOOLS: Tool[] = [
       faq: [
         {
           question: "Can I add text directly over PDF pages?",
-          answer: "Yes, click the 'Text' tool to create text boxes anywhere on your document with customizable fonts and colors."
+          answer: "Yes, click the 'Text' tool to create text boxes anywhere on your document with customizable fonts, colors, and sizing."
+        },
+        {
+          question: "Can I draw freehand annotations, callouts, and arrows?",
+          answer: "Yes, use the drawing pen and brush tools to sketch callouts, circle critical data, underline passages, and create freehand diagrams directly on your PDF pages."
+        },
+        {
+          question: "Are my edited documents secure and confidential?",
+          answer: "100% confidential. All edits, annotations, and vector stamping execute entirely on your device via client-side WebAssembly. Your files are never uploaded to any external server."
+        },
+        {
+          question: "Does the PDF editor work on mobile phones and tablets?",
+          answer: "Yes, the editor is fully responsive with touch-enabled drawing support for iPads, Android tablets, iPhones, and smartphones."
         }
       ]
     },

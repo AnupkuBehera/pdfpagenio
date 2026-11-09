@@ -10,7 +10,12 @@ interface CatchAllProps {
   }>;
 }
 
-function resolveToolFromSlug(slugs: string[]): { tool: Tool; locale?: string; reviewed?: boolean } | null {
+function resolveToolFromSlug(slugs: string[]): {
+  tool: Tool;
+  locale?: string;
+  reviewed?: boolean;
+  locInfo?: { slug: string; name: string; description: string; reviewed: boolean };
+} | null {
   if (!slugs || slugs.length === 0) return null;
 
   if (slugs.length === 1) {
@@ -26,7 +31,7 @@ function resolveToolFromSlug(slugs: string[]): { tool: Tool; locale?: string; re
       if (tool.localized) {
         for (const [l, info] of Object.entries(tool.localized)) {
           if (l.toLowerCase() === locale && info.slug === localizedSlug) {
-            return { tool, locale, reviewed: info.reviewed };
+            return { tool, locale, reviewed: info.reviewed, locInfo: info };
           }
         }
       }
@@ -62,7 +67,7 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
     return { title: "Tool Not Found | PDF Pagenio" };
   }
 
-  const { tool, locale, reviewed } = match;
+  const { tool, locale, reviewed, locInfo } = match;
   const BASE_URL = "https://pdfpagenio.com";
   const canonicalUrl = locale
     ? `${BASE_URL}/${locale}/${slug[1]}`
@@ -74,20 +79,21 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
   };
 
   if (tool.localized) {
-    for (const [l, locInfo] of Object.entries(tool.localized)) {
-      if (locInfo.reviewed) {
-        alternates[l] = `${BASE_URL}/${l.toLowerCase()}/${locInfo.slug}`;
+    for (const [l, lInfo] of Object.entries(tool.localized)) {
+      if (lInfo.reviewed) {
+        alternates[l] = `${BASE_URL}/${l.toLowerCase()}/${lInfo.slug}`;
       }
     }
   }
 
-  const title = locale
-    ? `${tool.name} (${locale.toUpperCase()}) | Free Online Tool | PDF Pagenio`
+  const title = locInfo
+    ? `${locInfo.name} | PDF Pagenio`
     : `${tool.name} | Free Online PDF Tool | PDF Pagenio`;
+  const description = locInfo?.description || tool.seo.description;
 
   return {
     title,
-    description: tool.seo.description,
+    description,
     keywords: tool.seo.keywords,
     robots: reviewed === false ? { index: false, follow: false } : { index: true, follow: true },
     alternates: {
@@ -96,7 +102,7 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
     },
     openGraph: {
       title,
-      description: tool.seo.description,
+      description,
       url: canonicalUrl,
       type: "website",
       siteName: "PDF Pagenio",
@@ -104,7 +110,7 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
     twitter: {
       card: "summary_large_image",
       title,
-      description: tool.seo.description,
+      description,
     },
   };
 }
@@ -120,14 +126,19 @@ export default async function CatchAllToolPage({ params }: CatchAllProps) {
     notFound();
   }
 
-  const { tool, locale } = match;
+  const { tool, locale, locInfo } = match;
+  const displayName = locInfo?.name || tool.name;
+  const displayDescription = locInfo?.description || tool.longDescription;
+  const pageUrl = locale
+    ? `https://pdfpagenio.com/${locale}/${slug[1]}`
+    : `https://pdfpagenio.com/${tool.slug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        name: tool.name,
+        name: displayName,
         operatingSystem: "All",
         applicationCategory: "UtilitiesApplication",
         offers: {
@@ -142,18 +153,18 @@ export default async function CatchAllToolPage({ params }: CatchAllProps) {
           bestRating: "5",
           worstRating: "1",
         },
-        description: tool.longDescription,
+        description: displayDescription,
       },
       {
         "@type": "HowTo",
-        name: `How to ${tool.name} online for free`,
-        description: tool.shortDescription,
+        name: locale ? `${displayName} - PDF Pagenio` : `How to ${tool.name} online for free`,
+        description: locInfo?.description || tool.shortDescription,
         step: tool.howTo.map((stepText, idx) => ({
           "@type": "HowToStep",
           position: idx + 1,
           name: `Step ${idx + 1}`,
           text: stepText,
-          url: `https://pdfpagenio.com/${tool.slug}#step-${idx + 1}`,
+          url: `${pageUrl}#step-${idx + 1}`,
         })),
       },
       {
@@ -168,8 +179,8 @@ export default async function CatchAllToolPage({ params }: CatchAllProps) {
           {
             "@type": "ListItem",
             position: 2,
-            name: tool.name,
-            item: `https://pdfpagenio.com/${tool.slug}`,
+            name: displayName,
+            item: pageUrl,
           },
         ],
       },

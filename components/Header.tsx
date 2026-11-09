@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   Layers,
@@ -13,12 +14,72 @@ import {
   Sparkles,
 } from "lucide-react";
 import Logo from "@/components/Logo";
-import { CATEGORIES, getToolsByCategory } from "@/lib/tools";
+import { CATEGORIES, TOOLS, getToolsByCategory, getToolBySlug } from "@/lib/tools";
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [convertMenuOpen, setConvertMenuOpen] = useState(false);
+
+  // Derive active tool and active locale from pathname
+  const segments = pathname ? pathname.split("/").filter(Boolean) : [];
+  let currentLocale = "en";
+  let activeTool = null;
+
+  if (segments.length === 1) {
+    activeTool = getToolBySlug(segments[0]);
+  } else if (segments.length >= 2) {
+    const loc = segments[0].toLowerCase();
+    const slug = segments[1].toLowerCase();
+    currentLocale = loc;
+    for (const tool of TOOLS) {
+      if (tool.localized) {
+        for (const [l, info] of Object.entries(tool.localized)) {
+          if (l.toLowerCase() === loc && info.slug === slug) {
+            activeTool = tool;
+            break;
+          }
+        }
+      }
+      if (activeTool) break;
+    }
+  }
+
+  const localeBadge = currentLocale === "pt-br" ? "PT" : currentLocale.toUpperCase();
+
+  const langLinks = [
+    {
+      code: "en",
+      label: "English",
+      href: activeTool ? `/${activeTool.slug}` : "/",
+    },
+    {
+      code: "es",
+      label: "Español",
+      href: activeTool?.localized?.es?.slug ? `/es/${activeTool.localized.es.slug}` : "/es/unir-pdf",
+    },
+    {
+      code: "fr",
+      label: "Français",
+      href: activeTool?.localized?.fr?.slug ? `/fr/${activeTool.localized.fr.slug}` : "/fr/fusionner-pdf",
+    },
+    {
+      code: "id",
+      label: "Bahasa Indonesia",
+      href: activeTool?.localized?.id?.slug ? `/id/${activeTool.localized.id.slug}` : "/id/gabungkan-pdf",
+    },
+    {
+      code: "pt-br",
+      label: "Português (BR)",
+      href: activeTool?.localized?.["pt-br"]?.slug ? `/pt-br/${activeTool.localized["pt-br"].slug}` : "/pt-br/juntar-pdf",
+    },
+    {
+      code: "hi",
+      label: "हिन्दी",
+      href: activeTool?.localized?.hi?.slug ? `/hi/${activeTool.localized.hi.slug}` : "/hi/merge-pdf",
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-slate-200/60 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)] transition-all">
@@ -174,46 +235,28 @@ export default function Header() {
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-brand-600 rounded-xl hover:bg-slate-100/60 transition-colors border border-slate-200/80"
               >
                 <Globe className="w-3.5 h-3.5 text-slate-500" />
-                <span>EN</span>
+                <span>{localeBadge}</span>
               </button>
               <div className="absolute right-0 top-full mt-1.5 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/80 p-2 hidden group-hover:block animate-in fade-in duration-100 z-50">
-                <Link
-                  href="/"
-                  className="flex items-center justify-between px-3 py-2 text-xs font-bold text-brand-600 bg-brand-50 rounded-xl"
-                >
-                  <span>English</span>
-                  <span className="text-[10px] font-normal uppercase opacity-75">Default</span>
-                </Link>
-                <Link
-                  href="/es/unir-pdf"
-                  className="block px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl"
-                >
-                  Español
-                </Link>
-                <Link
-                  href="/fr/fusionner-pdf"
-                  className="block px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl"
-                >
-                  Français
-                </Link>
-                <Link
-                  href="/id/gabungkan-pdf"
-                  className="block px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl"
-                >
-                  Bahasa Indonesia
-                </Link>
-                <Link
-                  href="/pt-br/juntar-pdf"
-                  className="block px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl"
-                >
-                  Português (BR)
-                </Link>
-                <Link
-                  href="/hi/merge-pdf"
-                  className="block px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl"
-                >
-                  हिन्दी
-                </Link>
+                {langLinks.map((item) => {
+                  const isActive = item.code === currentLocale;
+                  return (
+                    <Link
+                      key={item.code}
+                      href={item.href}
+                      className={`flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors ${
+                        isActive
+                          ? "font-bold text-brand-600 bg-brand-50"
+                          : "font-medium text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <span className="text-[10px] font-normal uppercase opacity-75">Active</span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
@@ -271,6 +314,33 @@ export default function Header() {
             >
               Pricing
             </Link>
+          </div>
+
+          {/* Mobile Language Bar */}
+          <div className="pt-2 pb-3 border-b border-slate-100">
+            <div className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5" />
+              <span>Language / Idioma</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {langLinks.map((item) => {
+                const isActive = item.code === currentLocale;
+                return (
+                  <Link
+                    key={item.code}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                      isActive
+                        ? "bg-brand-600 text-white"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
           <div className="space-y-4 pt-1">
