@@ -28,3 +28,4 @@ export async function flattenPDFClient(
     newSize: cleanBytes.byteLength,
   };
 }
+

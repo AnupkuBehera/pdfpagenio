@@ -109,3 +109,4 @@ export async function addBatesStamping(
 
   return await pdfDoc.save({ useObjectStreams: true });
 }
+

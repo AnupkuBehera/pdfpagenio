@@ -1,6 +1,15 @@
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ShieldCheck, Lock, Trash2, ArrowLeft } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | PDF Pagenio",
+  description: "Learn how PDF Pagenio protects your document privacy with 100% on-device client-side processing.",
+  alternates: {
+    canonical: "/privacy",
+  },
+};
 
 export default function PrivacyPage() {
   return (

@@ -12,6 +12,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pdfpagenio.com"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     default: "PDF Pagenio | Fast, Secure & Free Online PDF Tools",
     template: "%s | PDF Pagenio",
@@ -93,11 +96,6 @@ const globalJsonLd = {
       url: "https://pdfpagenio.com",
       name: "PDF Pagenio",
       publisher: { "@id": "https://pdfpagenio.com/#organization" },
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://pdfpagenio.com/?q={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
     },
   ],
 };

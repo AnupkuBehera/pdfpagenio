@@ -412,7 +412,7 @@ export default function HomePage() {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <Link
-                  href="/translate-pdf"
+                  href="/ai-translate-pdf"
                   className="px-4.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
                 >
                   <span>Translate PDF</span>

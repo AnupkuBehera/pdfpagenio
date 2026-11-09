@@ -19,6 +19,7 @@ import { convertHtmlToPdf } from "../lib/pdf/client-html-to-pdf";
 import { addBatesStamping, formatBatesNumber } from "../lib/pdf/client-bates";
 import { flattenPDFClient } from "../lib/pdf/client-flatten";
 import { imagesToPDF } from "../lib/pdf/client-images";
+import { onRequest } from "../functions/_middleware";
 
 async function createTestPDF(numPages = 3, label = "Doc") {
   const doc = await PDFDocument.create();
@@ -334,8 +335,52 @@ async function runTests() {
   assert.strictEqual(Math.round(legalPage.getHeight()), 1008, "US Legal height should be 1008pt");
   console.log("  ✓ US Paper Standards (Letter & Legal) passed");
 
+  // 26. Cloudflare Pages 301 Canonical & Route Remediation Middleware Test
+  console.log("26. Testing Cloudflare Pages 301 Edge Middleware...");
+  const dummyNext = async () => new Response("OK", { status: 200 });
+
+  // Test 1: www -> apex 301
+  const resWww = await onRequest({
+    request: new Request("https://www.pdfpagenio.com/jpg-to-pdf"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resWww.status, 301);
+  assert.strictEqual(resWww.headers.get("Location"), "https://pdfpagenio.com/jpg-to-pdf");
+
+  // Test 2: http://www. -> single-hop https://pdfpagenio.com/
+  const resHttpWww = await onRequest({
+    request: new Request("http://www.pdfpagenio.com/"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resHttpWww.status, 301);
+  assert.strictEqual(resHttpWww.headers.get("Location"), "https://pdfpagenio.com/");
+
+  // Test 3: /translate-pdf legacy route -> /ai-translate-pdf
+  const resTranslate = await onRequest({
+    request: new Request("https://pdfpagenio.com/translate-pdf"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resTranslate.status, 301);
+  assert.strictEqual(resTranslate.headers.get("Location"), "https://pdfpagenio.com/ai-translate-pdf");
+
+  // Test 4: Cloudflare email protection scraper path -> /contact
+  const resEmail = await onRequest({
+    request: new Request("https://pdfpagenio.com/cdn-cgi/l/email-protection#abc123"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resEmail.status, 301);
+  assert.strictEqual(resEmail.headers.get("Location"), "https://pdfpagenio.com/contact");
+
+  // Test 5: Clean apex request passes through untouched
+  const resClean = await onRequest({
+    request: new Request("https://pdfpagenio.com/jpg-to-pdf"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resClean.status, 200);
+  console.log("  ✓ Cloudflare Pages 301 Edge Middleware passed (5/5 scenarios verified)");
+
   console.log("\n=========================================");
-  console.log("  ALL 25 PDF & CONVERSION TESTS PASSED! ");
+  console.log("  ALL 26 TESTS PASSED! (PDF + REDIRECTS) ");
   console.log("=========================================\n");
 }
 

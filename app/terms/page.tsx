@@ -1,6 +1,15 @@
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Terms of Service | PDF Pagenio",
+  description: "Read the Terms of Service for using PDF Pagenio tools and services.",
+  alternates: {
+    canonical: "/terms",
+  },
+};
 
 export default function TermsPage() {
   return (

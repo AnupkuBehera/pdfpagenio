@@ -1,6 +1,15 @@
 import React from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft, Heart, Users, Globe2, ShieldCheck, Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About Us | PDF Pagenio",
+  description: "Learn about PDF Pagenio, our mission for private, high-speed, and accessible in-browser PDF utilities.",
+  alternates: {
+    canonical: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (
