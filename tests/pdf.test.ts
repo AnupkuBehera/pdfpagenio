@@ -378,7 +378,15 @@ async function runTests() {
     next: dummyNext,
   });
   assert.strictEqual(resClean.status, 200);
-  console.log("  ✓ Cloudflare Pages 301 Edge Middleware passed (5/5 scenarios verified)");
+
+  // Test 6: manifest.webmanifest receives X-Robots-Tag: noindex, nofollow
+  const resManifest = await onRequest({
+    request: new Request("https://pdfpagenio.com/manifest.webmanifest"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resManifest.status, 200);
+  assert.strictEqual(resManifest.headers.get("X-Robots-Tag"), "noindex, nofollow");
+  console.log("  ✓ Cloudflare Pages 301 Edge Middleware passed (6/6 scenarios verified)");
 
   // 27. SEO Content Quality & Categories Coverage Test
   console.log("27. Testing SEO content quality and category integrity...");

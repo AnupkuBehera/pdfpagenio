@@ -8,17 +8,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/cdn-cgi/", "/*?*"],
+        disallow: ["/api/", "/cdn-cgi/", "/*?*", "/manifest.webmanifest"],
       },
       {
         userAgent: "Googlebot",
         allow: "/",
-        disallow: ["/api/", "/cdn-cgi/", "/*?*"],
+        disallow: ["/api/", "/cdn-cgi/", "/*?*", "/manifest.webmanifest"],
       },
       {
         userAgent: "Bingbot",
         allow: "/",
-        disallow: ["/api/", "/cdn-cgi/", "/*?*"],
+        disallow: ["/api/", "/cdn-cgi/", "/*?*", "/manifest.webmanifest"],
       },
     ],
     sitemap: "https://pdfpagenio.com/sitemap.xml",

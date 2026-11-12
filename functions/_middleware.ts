@@ -36,5 +36,17 @@ export async function onRequest(context: PagesFunctionContext): Promise<Response
     return Response.redirect(url.toString(), 301);
   }
 
+  // 5. Exclude PWA manifest from search engine evaluation
+  if (url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith(".webmanifest")) {
+    const response = await context.next();
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set("X-Robots-Tag", "noindex, nofollow");
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    });
+  }
+
   return context.next();
 }

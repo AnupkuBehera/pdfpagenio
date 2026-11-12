@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://pdfpagenio.com"),
   alternates: {
-    canonical: "/",
+    canonical: "https://pdfpagenio.com",
   },
   title: {
     default: "PDF Pagenio | Fast, Secure & Free Online PDF Tools",
