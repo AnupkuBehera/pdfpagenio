@@ -61,6 +61,54 @@ const UI_TEXT: Record<string, {
     trustBadge: "100% डिवाइस पर • सुरक्षित और निजी",
     steps: ["1. अपलोड करें", "2. कॉन्फ़िगर करें", "3. डाउनलोड करें"],
   },
+  vi: {
+    howTo: (name) => `Cách sử dụng ${name} trong 3 bước đơn giản`,
+    faq: "Câu hỏi thường gặp",
+    related: "Khám phá thêm công cụ PDF",
+    availableLanguages: "Có sẵn bằng các ngôn ngữ khác",
+    trustBadge: "100% trên thiết bị • An toàn & Bảo mật",
+    steps: ["1. Tải lên", "2. Thiết lập", "3. Tải xuống"],
+  },
+  ru: {
+    howTo: (name) => `Как использовать ${name} за 3 простых шага`,
+    faq: "Часто задаваемые вопросы",
+    related: "Другие инструменты PDF",
+    availableLanguages: "Доступно на других языках",
+    trustBadge: "100% на устройстве • Безопасно и конфиденциально",
+    steps: ["1. Загрузить", "2. Настроить", "3. Скачать"],
+  },
+  ar: {
+    howTo: (name) => `كيفية استخدام ${name} في 3 خطوات بسيطة`,
+    faq: "الأسئلة الشائعة",
+    related: "استكشف المزيد من أدوات PDF",
+    availableLanguages: "متوفر بلغات أخرى",
+    trustBadge: "100% على جهازك • آمن وخاص بالكامل",
+    steps: ["1. رفع الملف", "2. ضبط الإعدادات", "3. تحميل"],
+  },
+  ja: {
+    howTo: (name) => `3つの簡単なステップで${name}を使用する方法`,
+    faq: "よくある質問",
+    related: "その他のPDFツール",
+    availableLanguages: "他の言語で利用可能",
+    trustBadge: "100%デバイス上で処理 • 安全でプライベート",
+    steps: ["1. アップロード", "2. 設定", "3. ダウンロード"],
+  },
+  tr: {
+    howTo: (name) => `3 Kolay Adımda ${name} Nasıl Kullanılır`,
+    faq: "Sıkça Sorulan Sorular",
+    related: "Daha Fazla PDF Aracını Keşfedin",
+    availableLanguages: "Diğer dillerde mevcuttur",
+    trustBadge: "%100 Cihazınızda • Güvenli ve Gizli",
+    steps: ["1. Yükle", "2. Yapılandır", "3. İndir"],
+  },
+  de: {
+    howTo: (name) => `So verwenden Sie ${name} in 3 einfachen Schritten`,
+    faq: "Häufig gestellte Fragen",
+    related: "Weitere PDF-Tools entdecken",
+    availableLanguages: "In anderen Sprachen verfügbar",
+    trustBadge: "100% auf dem Gerät • Sicher und privat",
+    steps: ["1. Hochladen", "2. Konfigurieren", "3. Herunterladen"],
+  },
 };
 
 export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
@@ -347,6 +395,12 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
                 id: "Bahasa Indonesia",
                 "pt-br": "Português",
                 hi: "हिन्दी",
+                vi: "Tiếng Việt",
+                ru: "Русский",
+                ar: "العربية",
+                ja: "日本語",
+                tr: "Türkçe",
+                de: "Deutsch",
               };
               const label = langLabels[langKey.toLowerCase()] || langKey.toUpperCase();
               return (

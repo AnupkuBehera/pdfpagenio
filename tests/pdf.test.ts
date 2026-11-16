@@ -416,6 +416,16 @@ async function runTests() {
   assert.ok(editPdfTool, "edit-pdf tool must exist");
   assert.ok(editPdfTool.seo.faq.length >= 4, "edit-pdf must have at least 4 detailed FAQs");
 
+  // Verify the 4 previously-404 localized routes are fully active
+  const splitTool = getToolBySlug("split-pdf");
+  assert.ok(splitTool?.localized?.vi?.slug === "cat-file-pdf" && splitTool.localized.vi.reviewed);
+  assert.ok(splitTool?.localized?.ru?.slug === "razdelit-pdf" && splitTool.localized.ru.reviewed);
+  assert.ok(splitTool?.localized?.ar?.slug === "taqsim-pdf" && splitTool.localized.ar.reviewed);
+
+  const pageNumbersTool = getToolBySlug("add-page-numbers");
+  assert.ok(pageNumbersTool?.localized?.vi?.slug === "danh-so-trang-pdf" && pageNumbersTool.localized.vi.reviewed);
+  console.log("  ✓ Verified active status for /vi/danh-so-trang-pdf, /ru/razdelit-pdf, /vi/cat-file-pdf, and /ar/taqsim-pdf");
+
   let totalReviewedLocalized = 0;
   for (const tool of TOOLS) {
     if (tool.localized) {

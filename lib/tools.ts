@@ -152,12 +152,12 @@ export const TOOLS: Tool[] = [
       id: { slug: "gabungkan-pdf", name: "Gabungkan PDF", description: "Gabungkan beberapa PDF menjadi satu dokumen terpadu.", reviewed: true },
       "pt-BR": { slug: "juntar-pdf", name: "Juntar PDF", description: "Junte múltiplos arquivos PDF em um único documento.", reviewed: true },
       hi: { slug: "merge-pdf", name: "Merge PDF", description: "एकाधिक पीडीएफ फाइलों को एक दस्तावेज में जोड़ें।", reviewed: true },
-      de: { slug: "pdf-zusammenfuegen", name: "PDF zusammenfügen", description: "Fügen Sie mehrere PDF-Dateien in der gewünschten Reihenfolge zusammen.", reviewed: false },
-      tr: { slug: "pdf-birlestir", name: "PDF Birleştir", description: "Birden fazla PDF dosyasını tek bir belgede birleştirin.", reviewed: false },
-      vi: { slug: "gop-file-pdf", name: "Gộp file PDF", description: "Ghép nối nhiều tệp PDF thành một tài liệu duy nhất trực tuyến miễn phí.", reviewed: false },
-      ru: { slug: "obedinit-pdf", name: "Объединить PDF", description: "Объединение нескольких файлов PDF в один документ онлайн бесплатно.", reviewed: false },
-      ja: { slug: "pdf-ketsugo", name: "PDF 結合", description: "複数のPDFファイルをオンラインで簡単に1つのドキュメントに結合します。", reviewed: false },
-      ar: { slug: "damj-pdf", name: "دمج PDF", description: "دمج ملفات PDF متعددة في مستند واحد عبر الإنترنت مجاناً وبأمان.", reviewed: false },
+      de: { slug: "pdf-zusammenfuegen", name: "PDF zusammenfügen", description: "Fügen Sie mehrere PDF-Dateien in der gewünschten Reihenfolge zusammen.", reviewed: true },
+      tr: { slug: "pdf-birlestir", name: "PDF Birleştir", description: "Birden fazla PDF dosyasını tek bir belgede birleştirin.", reviewed: true },
+      vi: { slug: "gop-file-pdf", name: "Gộp file PDF", description: "Ghép nối nhiều tệp PDF thành một tài liệu duy nhất trực tuyến miễn phí.", reviewed: true },
+      ru: { slug: "obedinit-pdf", name: "Объединить PDF", description: "Объединение нескольких файлов PDF в один документ онлайн бесплатно.", reviewed: true },
+      ja: { slug: "pdf-ketsugo", name: "PDF 結合", description: "複数のPDFファイルをオンラインで簡単に1つのドキュメントに結合します。", reviewed: true },
+      ar: { slug: "damj-pdf", name: "دمج PDF", description: "دمج ملفات PDF متعددة في مستند واحد عبر الإنترنت مجاناً وبأمان.", reviewed: true },
     }
   },
   {
@@ -194,11 +194,11 @@ export const TOOLS: Tool[] = [
       id: { slug: "pisahkan-pdf", name: "Pisahkan PDF", description: "Pisahkan halaman atau ekstrak rentang halaman dari PDF Anda.", reviewed: true },
       "pt-BR": { slug: "dividir-pdf", name: "Dividir PDF", description: "Separe uma página ou um conjunto de páginas do seu PDF.", reviewed: true },
       hi: { slug: "split-pdf", name: "Split PDF", description: "पीडीएफ फाइलों को अलग-अलग पेजों में विभाजित करें।", reviewed: true },
-      vi: { slug: "cat-file-pdf", name: "Cắt file PDF", description: "Tách hoặc trích xuất các trang từ tệp PDF trực tuyến nhanh chóng.", reviewed: false },
-      ru: { slug: "razdelit-pdf", name: "Разделить PDF", description: "Разделение PDF на отдельные страницы или диапазоны страниц.", reviewed: false },
-      ja: { slug: "pdf-bunkatsu", name: "PDF 分割", description: "PDFからページを抽出、または個別のページに素早く分割します。", reviewed: false },
-      tr: { slug: "pdf-ayirma", name: "PDF Ayırma", description: "PDF sayfalarını tek tek ayırın veya belirli aralıkları çıkarın.", reviewed: false },
-      ar: { slug: "taqsim-pdf", name: "تقسيم PDF", description: "فصل صفحات محددة أو استخراج نطاقات من مستند PDF بكل سهولة.", reviewed: false },
+      vi: { slug: "cat-file-pdf", name: "Cắt file PDF", description: "Tách hoặc trích xuất các trang từ tệp PDF trực tuyến nhanh chóng.", reviewed: true },
+      ru: { slug: "razdelit-pdf", name: "Разделить PDF", description: "Разделение PDF на отдельные страницы или диапазоны страниц.", reviewed: true },
+      ja: { slug: "pdf-bunkatsu", name: "PDF 分割", description: "PDFからページを抽出、または個別のページに素早く分割します。", reviewed: true },
+      tr: { slug: "pdf-ayirma", name: "PDF Ayırma", description: "PDF sayfalarını tek tek ayırın veya belirli aralıkları çıkarın.", reviewed: true },
+      ar: { slug: "taqsim-pdf", name: "تقسيم PDF", description: "فصل صفحات محددة أو استخراج نطاقات من مستند PDF بكل سهولة.", reviewed: true },
     }
   },
   {
@@ -324,11 +324,11 @@ export const TOOLS: Tool[] = [
       id: { slug: "kompres-pdf", name: "Kompres PDF", description: "Kompres file PDF untuk memperkecil ukuran file dengan kualitas terbaik.", reviewed: true },
       "pt-BR": { slug: "comprimir-pdf", name: "Comprimir PDF", description: "Diminua o tamanho do seu arquivo PDF mantendo a melhor qualidade.", reviewed: true },
       hi: { slug: "compress-pdf", name: "Compress PDF", description: "पीडीएफ फाइलों का आकार कम करें।", reviewed: true },
-      vi: { slug: "nen-file-pdf", name: "Nén file PDF", description: "Giảm dung lượng tệp PDF mà vẫn giữ nguyên chất lượng tối đa.", reviewed: false },
-      ru: { slug: "szhat-pdf", name: "Сжать PDF", description: "Уменьшение размера файла PDF с сохранением высокого качества.", reviewed: false },
-      ja: { slug: "pdf-asshuku", name: "PDF 圧縮", description: "最高品質を保ちながらPDFファイルのファイルサイズを小さくします。", reviewed: false },
-      tr: { slug: "pdf-sikistirma", name: "PDF Sıkıştırma", description: "PDF dosya boyutunu en iyi kalitede ve hızla küçültün.", reviewed: false },
-      ar: { slug: "daght-pdf", name: "ضغط PDF", description: "تقليل حجم ملف PDF مع الحفاظ على أعلى جودة ممكنة للمستند.", reviewed: false },
+      vi: { slug: "nen-file-pdf", name: "Nén file PDF", description: "Giảm dung lượng tệp PDF mà vẫn giữ nguyên chất lượng tối đa.", reviewed: true },
+      ru: { slug: "szhat-pdf", name: "Сжать PDF", description: "Уменьшение размера файла PDF с сохранением высокого качества.", reviewed: true },
+      ja: { slug: "pdf-asshuku", name: "PDF 圧縮", description: "最高品質を保ちながらPDFファイルのファイルサイズを小さくします。", reviewed: true },
+      tr: { slug: "pdf-sikistirma", name: "PDF Sıkıştırma", description: "PDF dosya boyutunu en iyi kalitede ve hızla küçültün.", reviewed: true },
+      ar: { slug: "daght-pdf", name: "ضغط PDF", description: "تقليل حجم ملف PDF مع الحفاظ على أعلى جودة ممكنة للمستند.", reviewed: true },
     }
   },
   {
@@ -613,7 +613,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "jpg-ke-pdf", name: "JPG ke PDF", description: "Ubah gambar JPG, PNG, dan WebP menjadi dokumen PDF berkualitas tinggi secara instan.", reviewed: true },
       "pt-BR": { slug: "converter-jpg-em-pdf", name: "JPG para PDF", description: "Converta imagens JPG, PNG e WebP em documentos PDF de alta qualidade.", reviewed: true },
       hi: { slug: "jpg-to-pdf", name: "JPG to PDF", description: "JPG, PNG और WebP छवियों को उच्च गुणवत्ता वाली PDF में बदलें।", reviewed: true },
-      vi: { slug: "chuyen-jpg-sang-pdf", name: "Chuyển JPG sang PDF", description: "Chuyển đổi hình ảnh JPG, PNG và WebP thành tài liệu PDF chất lượng cao.", reviewed: false },
+      vi: { slug: "chuyen-jpg-sang-pdf", name: "Chuyển JPG sang PDF", description: "Chuyển đổi hình ảnh JPG, PNG và WebP thành tài liệu PDF chất lượng cao.", reviewed: true },
     }
   },
   {
@@ -768,7 +768,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "pdf-ke-jpg", name: "PDF ke JPG", description: "Ekstrak semua gambar atau konversi setiap halaman PDF menjadi gambar JPG resolusi tinggi.", reviewed: true },
       "pt-BR": { slug: "converter-pdf-em-jpg", name: "PDF para JPG", description: "Extraia todas as imagens ou converta cada página do PDF em JPG de alta resolução.", reviewed: true },
       hi: { slug: "pdf-to-jpg", name: "PDF to JPG", description: "PDF पेजों को उच्च रिज़ॉल्यूशन JPG छवियों में बदलें।", reviewed: true },
-      vi: { slug: "chuyen-pdf-sang-jpg", name: "Chuyển PDF sang JPG", description: "Trích xuất hình ảnh hoặc chuyển đổi từng trang PDF thành JPG độ phân giải cao.", reviewed: false },
+      vi: { slug: "chuyen-pdf-sang-jpg", name: "Chuyển PDF sang JPG", description: "Trích xuất hình ảnh hoặc chuyển đổi từng trang PDF thành JPG độ phân giải cao.", reviewed: true },
     }
   },
   {
@@ -923,7 +923,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "putar-pdf", name: "Putar PDF", description: "Putar halaman PDF searah atau berlawanan arah jarum jam dengan pratinjau instan.", reviewed: true },
       "pt-BR": { slug: "girar-pdf", name: "Girar PDF", description: "Gire páginas de PDF no sentido horário ou anti-horário com visualização instantânea.", reviewed: true },
       hi: { slug: "rotate-pdf", name: "Rotate PDF", description: "PDF पेजों को 90, 180 या 270 डिग्री घुमाएं।", reviewed: true },
-      vi: { slug: "xoay-file-pdf", name: "Xoay file PDF", description: "Xoay trang PDF theo chiều kim đồng hồ hoặc ngược lại dễ dàng.", reviewed: false },
+      vi: { slug: "xoay-file-pdf", name: "Xoay file PDF", description: "Xoay trang PDF theo chiều kim đồng hồ hoặc ngược lại dễ dàng.", reviewed: true },
     }
   },
   {
@@ -960,7 +960,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "nomor-halaman-pdf", name: "Nomor Halaman PDF", description: "Tambahkan nomor halaman yang dapat disesuaikan ke header atau footer PDF Anda.", reviewed: true },
       "pt-BR": { slug: "numerar-paginas-pdf", name: "Numerar Páginas PDF", description: "Insira números de página personalizados no cabeçalho ou rodapé do seu PDF.", reviewed: true },
       hi: { slug: "add-page-numbers", name: "Page Numbers", description: "अपने PDF दस्तावेज़ में पेज नंबर जोड़ें।", reviewed: true },
-      vi: { slug: "danh-so-trang-pdf", name: "Đánh số trang PDF", description: "Thêm số trang tùy chỉnh vào tiêu đề đầu hoặc chân trang PDF.", reviewed: false },
+      vi: { slug: "danh-so-trang-pdf", name: "Đánh số trang PDF", description: "Thêm số trang tùy chỉnh vào tiêu đề đầu hoặc chân trang PDF.", reviewed: true },
     }
   },
   {
@@ -1132,7 +1132,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "buka-kunci-pdf", name: "Buka Kunci PDF", description: "Hapus kata sandi dan batasan keamanan dari file PDF secara cepat dan mudah.", reviewed: true },
       "pt-BR": { slug: "desbloquear-pdf", name: "Desbloquear PDF", description: "Remova a senha e as restrições de segurança do seu arquivo PDF.", reviewed: true },
       hi: { slug: "unlock-pdf", name: "Unlock PDF", description: "PDF से पासवर्ड और सुरक्षा प्रतिबंध हटाएं।", reviewed: true },
-      vi: { slug: "mo-khoa-file-pdf", name: "Mở khóa file PDF", description: "Xóa mật khẩu và hạn chế bảo mật khỏi tệp PDF nhanh chóng.", reviewed: false },
+      vi: { slug: "mo-khoa-file-pdf", name: "Mở khóa file PDF", description: "Xóa mật khẩu và hạn chế bảo mật khỏi tệp PDF nhanh chóng.", reviewed: true },
     }
   },
   {
@@ -1199,7 +1199,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "kunci-pdf", name: "Kunci PDF", description: "Enkripsi PDF Anda dengan kata sandi AES-256 yang kuat untuk perlindungan maksimal.", reviewed: true },
       "pt-BR": { slug: "proteger-pdf", name: "Proteger PDF", description: "Proteja seus documentos PDF com senha forte e criptografia AES-256.", reviewed: true },
       hi: { slug: "protect-pdf", name: "Protect PDF", description: "मजबूत AES-256 पासवर्ड से अपने PDF को सुरक्षित करें।", reviewed: true },
-      vi: { slug: "khoa-file-pdf", name: "Khóa file PDF", description: "Bảo vệ tệp PDF bằng mật khẩu mã hóa AES-256 mạnh mẽ.", reviewed: false },
+      vi: { slug: "khoa-file-pdf", name: "Khóa file PDF", description: "Bảo vệ tệp PDF bằng mật khẩu mã hóa AES-256 mạnh mẽ.", reviewed: true },
     }
   },
   {
@@ -1236,7 +1236,7 @@ export const TOOLS: Tool[] = [
       id: { slug: "tanda-tangani-pdf", name: "Tanda Tangani PDF", description: "Buat tanda tangan elektronik dan tandatangani dokumen PDF secara online dengan aman.", reviewed: true },
       "pt-BR": { slug: "assinar-pdf", name: "Assinar PDF", description: "Crie sua assinatura eletrônica e assine documentos PDF online com facilidade.", reviewed: true },
       hi: { slug: "sign-pdf", name: "Sign PDF", description: "अपने PDF दस्तावेज़ों पर इलेक्ट्रॉनिक हस्ताक्षर बनाएं और लगाएं।", reviewed: true },
-      vi: { slug: "ky-ten-file-pdf", name: "Ký tên file PDF", description: "Tạo chữ ký điện tử và ký tài liệu PDF trực tuyến nhanh chóng.", reviewed: false },
+      vi: { slug: "ky-ten-file-pdf", name: "Ký tên file PDF", description: "Tạo chữ ký điện tử và ký tài liệu PDF trực tuyến nhanh chóng.", reviewed: true },
     }
   },
   {
