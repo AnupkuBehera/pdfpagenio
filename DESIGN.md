@@ -190,3 +190,4 @@ Visual shortcut hint:
 - **DON'T** introduce slow modal animations or blocking progress spinners for operations that finish in under 100ms.
 - **DON'T** add generic stock vector illustrations; always prefer miniature, real-looking product UI previews.
 - **DON'T** hide primary action buttons below the fold on mobile screens.
+

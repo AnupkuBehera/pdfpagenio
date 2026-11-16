@@ -364,6 +364,22 @@ async function runTests() {
   assert.strictEqual(resTranslate.status, 301);
   assert.strictEqual(resTranslate.headers.get("Location"), "https://pdfpagenio.com/ai-translate-pdf");
 
+  // Test 3b: Single-hop www + legacy route -> apex canonical active route
+  const resWwwTranslate = await onRequest({
+    request: new Request("https://www.pdfpagenio.com/translate-pdf"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resWwwTranslate.status, 301);
+  assert.strictEqual(resWwwTranslate.headers.get("Location"), "https://pdfpagenio.com/ai-translate-pdf");
+
+  // Test 3c: /summarize-pdf alias -> /ai-summarize-pdf
+  const resSummarize = await onRequest({
+    request: new Request("https://pdfpagenio.com/summarize-pdf"),
+    next: dummyNext,
+  });
+  assert.strictEqual(resSummarize.status, 301);
+  assert.strictEqual(resSummarize.headers.get("Location"), "https://pdfpagenio.com/ai-summarize-pdf");
+
   // Test 4: Cloudflare email protection scraper path -> /contact
   const resEmail = await onRequest({
     request: new Request("https://pdfpagenio.com/cdn-cgi/l/email-protection#abc123"),
