@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ArrowLeft, Heart, Users, Globe2, ShieldCheck, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us | PDF Pagenio",
+  title: "About Us",
   description: "Learn about PDF Pagenio, our mission for private, high-speed, and accessible in-browser PDF utilities.",
   alternates: {
     canonical: "/about",

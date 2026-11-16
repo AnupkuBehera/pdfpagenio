@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { TOOLS, Tool, getToolBySlug } from "@/lib/tools";
+import { TOOLS, Tool, ToolLocalizedInfo, getToolBySlug } from "@/lib/tools";
 import ToolPageLayout from "@/components/ToolPageLayout";
 
 interface CatchAllProps {
@@ -14,7 +14,7 @@ function resolveToolFromSlug(slugs: string[]): {
   tool: Tool;
   locale?: string;
   reviewed?: boolean;
-  locInfo?: { slug: string; name: string; description: string; reviewed: boolean };
+  locInfo?: ToolLocalizedInfo;
 } | null {
   if (!slugs || slugs.length === 0) return null;
 
@@ -59,12 +59,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: CatchAllProps): Promise<Metadata> {
   const { slug } = await params;
   if (!slug || slug[0] === "_not-found") {
-    return { title: "Page Not Found | PDF Pagenio" };
+    return { title: "Page Not Found" };
   }
 
   const match = resolveToolFromSlug(slug);
   if (!match) {
-    return { title: "Tool Not Found | PDF Pagenio" };
+    return { title: "Tool Not Found" };
   }
 
   const { tool, locale, reviewed, locInfo } = match;
@@ -87,8 +87,8 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
   }
 
   const title = locInfo
-    ? `${locInfo.name} | PDF Pagenio`
-    : `${tool.name} | Free Online PDF Tool | PDF Pagenio`;
+    ? locInfo.name
+    : `${tool.name} | Free Online PDF Tool`;
   const description = locInfo?.description || tool.seo.description;
 
   return {
@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
       languages: alternates,
     },
     openGraph: {
-      title,
+      title: `${title} | PDF Pagenio`,
       description,
       url: canonicalUrl,
       type: "website",
@@ -109,7 +109,7 @@ export async function generateMetadata({ params }: CatchAllProps): Promise<Metad
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | PDF Pagenio`,
       description,
     },
   };
@@ -159,7 +159,7 @@ export default async function CatchAllToolPage({ params }: CatchAllProps) {
         "@type": "HowTo",
         name: locale ? `${displayName} - PDF Pagenio` : `How to ${tool.name} online for free`,
         description: locInfo?.description || tool.shortDescription,
-        step: tool.howTo.map((stepText, idx) => ({
+        step: (locInfo?.howTo || tool.howTo).map((stepText, idx) => ({
           "@type": "HowToStep",
           position: idx + 1,
           name: `Step ${idx + 1}`,
@@ -184,11 +184,11 @@ export default async function CatchAllToolPage({ params }: CatchAllProps) {
           },
         ],
       },
-      ...(tool.seo.faq.length > 0
+      ...((locInfo?.faq || tool.seo.faq).length > 0
         ? [
             {
               "@type": "FAQPage",
-              mainEntity: tool.seo.faq.map((item) => ({
+              mainEntity: (locInfo?.faq || tool.seo.faq).map((item) => ({
                 "@type": "Question",
                 name: item.question,
                 acceptedAnswer: {

@@ -12,6 +12,8 @@ export interface ToolLocalizedInfo {
   name: string;
   description: string;
   reviewed: boolean;
+  howTo?: string[];
+  faq?: ToolFAQ[];
 }
 
 export interface ToolFAQ {
@@ -1197,7 +1199,27 @@ export const TOOLS: Tool[] = [
       es: { slug: "proteger-pdf", name: "Proteger PDF", description: "Protege documentos PDF con una contraseña y cifrado fuerte.", reviewed: true },
       fr: { slug: "proteger-pdf", name: "Protéger PDF", description: "Protégez vos fichiers PDF avec un mot de passe fort et chiffrement AES.", reviewed: true },
       id: { slug: "kunci-pdf", name: "Kunci PDF", description: "Enkripsi PDF Anda dengan kata sandi AES-256 yang kuat untuk perlindungan maksimal.", reviewed: true },
-      "pt-BR": { slug: "proteger-pdf", name: "Proteger PDF", description: "Proteja seus documentos PDF com senha forte e criptografia AES-256.", reviewed: true },
+      "pt-BR": {
+        slug: "proteger-pdf",
+        name: "Proteger PDF",
+        description: "Proteja seus documentos PDF com senha forte e criptografia AES-256.",
+        reviewed: true,
+        howTo: [
+          "Selecione e envie seu arquivo PDF para proteger.",
+          "Digite e confirme sua senha segura de criptografia.",
+          "Clique em 'Proteger PDF' e baixe seu arquivo protegido instantaneamente."
+        ],
+        faq: [
+          {
+            question: "Quão segura é a criptografia do PDF?",
+            answer: "Utilizamos criptografia padrão da indústria AES de 256 bits, garantindo que ninguém sem a senha consiga abrir ou visualizar seu documento."
+          },
+          {
+            question: "Meus arquivos são enviados para a nuvem?",
+            answer: "Não. Todo o processo de proteção e criptografia ocorre diretamente no seu navegador via WebAssembly, sem enviar nenhum arquivo para servidores externos."
+          }
+        ]
+      },
       hi: { slug: "protect-pdf", name: "Protect PDF", description: "मजबूत AES-256 पासवर्ड से अपने PDF को सुरक्षित करें।", reviewed: true },
       vi: { slug: "khoa-file-pdf", name: "Khóa file PDF", description: "Bảo vệ tệp PDF bằng mật khẩu mã hóa AES-256 mạnh mẽ.", reviewed: true },
     }

@@ -13,14 +13,24 @@ export interface ToolPageLayoutProps {
   locale?: string;
 }
 
-const UI_TEXT: Record<string, {
+interface UITextEntry {
   howTo: (name: string) => string;
   faq: string;
   related: string;
   availableLanguages: string;
   trustBadge: string;
   steps: [string, string, string];
-}> = {
+  benefits?: {
+    instantTitle: string;
+    instantDesc: string;
+    privacyTitle: string;
+    privacyDesc: string;
+    freeTitle: string;
+    freeDesc: string;
+  };
+}
+
+const UI_TEXT: Record<string, UITextEntry> = {
   es: {
     howTo: (name) => `Cómo usar ${name} en 3 pasos sencillos`,
     faq: "Preguntas Frecuentes",
@@ -28,6 +38,14 @@ const UI_TEXT: Record<string, {
     availableLanguages: "Disponible en otros idiomas",
     trustBadge: "100% en el dispositivo • Seguro y privado",
     steps: ["1. Subir", "2. Configurar", "3. Descargar"],
+    benefits: {
+      instantTitle: "Ejecución Instantánea en el Navegador",
+      instantDesc: "Se ejecuta directamente en su navegador con WebAssembly para un procesamiento inmediato sin latencia.",
+      privacyTitle: "100% de Privacidad Garantizada",
+      privacyDesc: "Sus archivos nunca salen de su dispositivo. Protegido con cifrado y sin almacenamiento en servidores remotos.",
+      freeTitle: "100% Gratis para Siempre",
+      freeDesc: "Sin marcas de agua ocultas, sin registro obligatorio y sin límites en sus tareas cotidianas con PDF.",
+    },
   },
   fr: {
     howTo: (name) => `Comment utiliser ${name} en 3 étapes simples`,
@@ -36,6 +54,14 @@ const UI_TEXT: Record<string, {
     availableLanguages: "Disponible dans d'autres langues",
     trustBadge: "100% sur l'appareil • Sécurisé et privé",
     steps: ["1. Téléverser", "2. Configurer", "3. Télécharger"],
+    benefits: {
+      instantTitle: "Exécution Instantanée dans le Navigateur",
+      instantDesc: "S'exécute directement dans votre navigateur avec WebAssembly pour un traitement instantané sans latence.",
+      privacyTitle: "100% Confidentialité Garantie",
+      privacyDesc: "Vos fichiers ne quittent jamais votre appareil. Protection chiffrée sans stockage sur des serveurs distants.",
+      freeTitle: "100% Gratuit pour Toujours",
+      freeDesc: "Aucun filigrane masqué, aucune inscription requise et aucune limite sur vos tâches PDF quotidiennes.",
+    },
   },
   id: {
     howTo: (name) => `Cara menggunakan ${name} dalam 3 langkah mudah`,
@@ -52,6 +78,14 @@ const UI_TEXT: Record<string, {
     availableLanguages: "Disponível em outros idiomas",
     trustBadge: "100% no dispositivo • Seguro e privado",
     steps: ["1. Enviar", "2. Configurar", "3. Baixar"],
+    benefits: {
+      instantTitle: "Execução Instantânea no Navegador",
+      instantDesc: "Executado diretamente no seu navegador com WebAssembly para processamento imediato com zero latência.",
+      privacyTitle: "100% de Privacidade Garantida",
+      privacyDesc: "Seus arquivos nunca saem do seu dispositivo. Protegido com criptografia e sem servidores remotos.",
+      freeTitle: "100% Gratuito para Sempre",
+      freeDesc: "Sem marcas d'água ocultas, sem cadastro obrigatório e sem restrições nas suas tarefas com PDF.",
+    },
   },
   hi: {
     howTo: (name) => `3 आसान चरणों में ${name} का उपयोग कैसे करें`,
@@ -120,6 +154,8 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
 
   const displayName = locInfo?.name || tool.name;
   const displayDescription = locInfo?.description || tool.longDescription;
+  const howToSteps = locInfo?.howTo || tool.howTo;
+  const faqList = locInfo?.faq || tool.seo.faq;
 
   const ui = (locKey && UI_TEXT[locKey]) || {
     howTo: (name: string) => `How to ${name} in 3 Simple Steps`,
@@ -279,9 +315,11 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
                 <Zap className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-extrabold text-slate-800 text-sm mb-1">Instant Browser Execution</h3>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">
+                  {ui.benefits?.instantTitle || "Instant Browser Execution"}
+                </h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                  Runs directly inside your browser with WebAssembly for zero latency and instant processing.
+                  {ui.benefits?.instantDesc || "Runs directly inside your browser with WebAssembly for zero latency and instant processing."}
                 </p>
               </div>
             </div>
@@ -291,9 +329,11 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
                 <Shield className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-extrabold text-slate-800 text-sm mb-1">100% Privacy Guaranteed</h3>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">
+                  {ui.benefits?.privacyTitle || "100% Privacy Guaranteed"}
+                </h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                  Your files are not stored, read, or indexed. Protected with TLS 1.3 encryption.
+                  {ui.benefits?.privacyDesc || "Your files are not stored, read, or indexed. Protected with TLS 1.3 encryption."}
                 </p>
               </div>
             </div>
@@ -303,9 +343,11 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-extrabold text-slate-800 text-sm mb-1">Free Forever</h3>
+                <h3 className="font-extrabold text-slate-800 text-sm mb-1">
+                  {ui.benefits?.freeTitle || "Free Forever"}
+                </h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                  No hidden watermarks, no mandatory signups, and no limits on essential everyday PDF workflows.
+                  {ui.benefits?.freeDesc || "No hidden watermarks, no mandatory signups, and no limits on essential everyday PDF workflows."}
                 </p>
               </div>
             </div>
@@ -320,7 +362,7 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tool.howTo.map((step, idx) => (
+          {howToSteps.map((step, idx) => (
             <div
               key={idx}
               className="bg-white rounded-3xl border border-slate-200/80 p-7 shadow-sm relative flex flex-col justify-between hover:shadow-md transition-shadow"
@@ -339,7 +381,7 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
       </section>
 
       {/* Frequently Asked Questions (FAQ) Accordion */}
-      {tool.seo.faq.length > 0 && (
+      {faqList.length > 0 && (
         <section className="py-16 bg-white border-t border-slate-200/80">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
@@ -350,7 +392,7 @@ export default function ToolPageLayout({ tool, locale }: ToolPageLayoutProps) {
             </div>
 
             <div className="space-y-4">
-              {tool.seo.faq.map((faq, idx) => (
+              {faqList.map((faq, idx) => (
                 <div
                   key={idx}
                   className="rounded-3xl border border-slate-200/80 p-6 bg-slate-50/50"

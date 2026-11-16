@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | PDF Pagenio",
+  title: "Terms of Service",
   description: "Read the Terms of Service for using PDF Pagenio tools and services.",
   alternates: {
     canonical: "/terms",
